@@ -1,0 +1,10 @@
+{
+  "tileSize": 12,
+  "pad": 1,
+  "stride": 14,
+  "margin": 1,
+  "spacing": 2,
+  "columns": 16,
+  "rows": 1,
+  "mask": "N=1 E=2 S=4 W=8"
+}

@@ -20,6 +20,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          persist-credentials: true
 
       - name: Setup Node
         uses: actions/setup-node@v4
@@ -33,14 +35,16 @@ jobs:
       - name: Build
         run: npm run build
 
-      - name: Publish build to docs/ on main
-        uses: peaceiris/actions-gh-pages@v4
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./dist
-          publish_branch: main
-          destination_dir: docs
-          keep_files: true
-          user_name: github-actions[bot]
-          user_email: github-actions[bot]@users.noreply.github.com
-          commit_message: Deploy built site to docs/
+      - name: Publish build to docs/
+        run: |
+          rm -rf docs
+          cp -r dist docs
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add docs
+          if git diff --staged --quiet; then
+            echo "No docs changes to deploy."
+          else
+            git commit -m "Deploy built site to docs/"
+            git push
+          fi
