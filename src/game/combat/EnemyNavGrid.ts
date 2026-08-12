@@ -196,7 +196,11 @@ export class EnemyNavGrid {
     if (!this.isBlockedCell(raw.cx, raw.cy)) return raw;
 
     const maxRing = 18;
-    let best: { cx: number; cy: number; d: number } | null = null;
+    let goalCx = 0;
+    let goalCy = 0;
+    let bestDist = Number.POSITIVE_INFINITY;
+    let found = false;
+
     for (let ring = 1; ring <= maxRing; ring += 1) {
       for (let dy = -ring; dy <= ring; dy += 1) {
         for (let dx = -ring; dx <= ring; dx += 1) {
@@ -206,13 +210,19 @@ export class EnemyNavGrid {
           if (this.isBlockedCell(cx, cy)) continue;
           const center = this.cellCenter(cx, cy);
           const d = Math.hypot(center.x - toX, center.y - toY);
-          if (best === null || d < best.d) best = { cx, cy, d };
+          if (!found || d < bestDist) {
+            found = true;
+            bestDist = d;
+            goalCx = cx;
+            goalCy = cy;
+          }
         }
       }
-      if (best !== null && best.d <= this.cellSize * 1.25) break;
+      if (found && bestDist <= this.cellSize * 1.25) break;
     }
-    if (best === null) return null;
-    return { cx: best.cx, cy: best.cy };
+
+    if (!found) return null;
+    return { cx: goalCx, cy: goalCy };
   }
 
   private heuristic(ax: number, ay: number, bx: number, by: number): number {

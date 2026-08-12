@@ -454,7 +454,7 @@ export class CombatSystem {
     const angleSamples = 3;
     const distSamples = 4;
     for (let a = 0; a < angleSamples; a += 1) {
-      const t = angleSamples === 1 ? 0.5 : a / (angleSamples - 1);
+      const t = a / (angleSamples - 1);
       const ang = aimAngle - half + t * (2 * half);
       for (let s = 1; s <= distSamples; s += 1) {
         const dist = (s / distSamples) * range;

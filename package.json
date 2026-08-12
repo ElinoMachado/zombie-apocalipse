@@ -17,7 +17,8 @@
     "build:tiles": "npm run build:tiles:roads && npm run build:tiles:sidewalks",
     "build:props:wrecked-cars": "powershell -ExecutionPolicy Bypass -File tools/tiles/buildWreckedCarSheet.ps1",
     "sync:audio": "node tools/audio/sync-zombie-sounds.mjs",
-    "predev": "node tools/audio/sync-zombie-sounds.mjs"
+    "predev": "node tools/audio/sync-zombie-sounds.mjs",
+    "prebuild": "node tools/audio/sync-zombie-sounds.mjs"
   },
   "dependencies": {
     "phaser": "^3.87.0"

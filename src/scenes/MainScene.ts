@@ -691,7 +691,7 @@ export class MainScene extends Phaser.Scene {
     return { city, dump, primaries, secondaries };
   }
 
-  private applyPreviewCamera(city: City): void {
+  private applyPreviewCamera(_city: City): void {
     const cam = this.cameras.main;
     const w = this.worldPixel.width;
     const h = this.worldPixel.height;
