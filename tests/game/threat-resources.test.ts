@@ -10,8 +10,10 @@ import {
 import { Inventory, ITEMS, MAX_CARRY_WEIGHT } from '../../src/game/inventory/inventory';
 import {
   LOOT_PRESENCE_CHANCE,
+  CAR_LOOT_PRESENCE_CHANCE,
   LOOT_SEARCH_MS,
   SURVIVAL_SENSE_COOLDOWN_MS,
+  SURVIVAL_SENSE_RADIUS_MULT,
 } from '../../src/game/resources/ResourceManager';
 import {
   rarityFromLootRoll,
@@ -77,8 +79,10 @@ describe('resources / loot', () => {
     expect(rollLoot(() => 0).itemId).toBe('scrap');
   });
 
-  it('exploration timings: 50% presence, 5s search, 2min sense CD', () => {
+  it('exploration timings: 50% presence, 20% cars, 5s search, 2min sense CD', () => {
     expect(LOOT_PRESENCE_CHANCE).toBe(0.5);
+    expect(CAR_LOOT_PRESENCE_CHANCE).toBe(0.2);
+    expect(SURVIVAL_SENSE_RADIUS_MULT).toBe(1.5);
     expect(LOOT_SEARCH_MS).toBe(5_000);
     expect(SURVIVAL_SENSE_COOLDOWN_MS).toBe(120_000);
   });

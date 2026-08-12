@@ -12,7 +12,7 @@ import {
 import { findSafePlayerSpawn } from '../game/findSafeSpawn';
 import { FireHazards } from '../game/FireHazards';
 import { Player } from '../game/Player';
-import { ResourceManager } from '../game/resources/ResourceManager';
+import { ResourceManager, SURVIVAL_SENSE_RADIUS_MULT } from '../game/resources/ResourceManager';
 import { WorldCollision } from '../game/WorldCollision';
 import { VisionWorldRenderer } from '../render/VisionWorldRenderer';
 import { GenerateCityButton } from '../ui/GenerateCityButton';
@@ -1070,7 +1070,7 @@ export class MainScene extends Phaser.Scene {
       visionPx,
     );
     if (!found) return;
-    this.pulseMaxR = visionPx;
+    this.pulseMaxR = visionPx * SURVIVAL_SENSE_RADIUS_MULT;
     this.pulseAgeMs = 0;
     if (!this.pulseGfx) {
       this.pulseGfx = this.add.graphics().setDepth(74);

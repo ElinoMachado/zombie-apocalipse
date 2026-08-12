@@ -10,10 +10,15 @@ import { syncInventoryCapacity } from '../inventory/itemActions';
 import { SurvivalState } from '../survival/SurvivalState';
 import type { WorldCollision } from '../WorldCollision';
 import type { LootTalentMods } from '../progression/talentEffects';
+import { CAR_POI_TYPE_IDS } from '../../assets/wreckedCars';
 import { rollLootWithIntellect, type LootRollResult } from './lootTable';
 
 /** Chance de o POI ter loot (resolvido ao aproximar pela 1ª vez). */
 export const LOOT_PRESENCE_CHANCE = 0.5;
+/** Carros (POI ou ambient) têm menor chance de loot. */
+export const CAR_LOOT_PRESENCE_CHANCE = 0.2;
+/** Multiplicador do raio do pulso Space (sentido de sobrevivência). */
+export const SURVIVAL_SENSE_RADIUS_MULT = 1.5;
 /** Tempo a vasculhar (ms). */
 export const LOOT_SEARCH_MS = 5_000;
 /** Raio para interagir / resolver presença. */
@@ -27,10 +32,12 @@ export interface LootSite {
   id: string;
   /** Id do POI de exploração (cidade). */
   poiId: string;
+  /** Tipo do POI / prop (ex.: abandoned_car, wrecked_car). */
+  typeId: string;
   x: number;
   y: number;
   luck: number;
-  /** null = ainda não aproximou; true/false após 50% roll. */
+  /** null = ainda não aproximou; true/false após roll de presença. */
   hasLoot: boolean | null;
   /** Vasculhadas concluídas neste POI (Mais uma vez! permite 2). */
   searchesDone: number;
@@ -132,6 +139,33 @@ export class ResourceManager {
       this.sites.push({
         id: `loot-${poi.id}`,
         poiId: poi.id,
+        typeId: poi.typeId,
+        x: px,
+        y: py,
+        luck: proximityFromCenter(distN),
+        hasLoot: null,
+        searchesDone: 0,
+        depleted: false,
+        pulseRevealUntil: 0,
+      });
+    }
+
+    for (const prop of city.ambientProps) {
+      if (prop.kind !== 'wrecked_car') continue;
+      const px = prop.x * ts + ts / 2;
+      const py = prop.y * ts + ts / 2;
+      const distN = centerDistanceNorm(
+        prop.x,
+        prop.y,
+        cx,
+        cy,
+        city.grid.w,
+        city.grid.h,
+      );
+      this.sites.push({
+        id: `loot-${prop.id}`,
+        poiId: prop.id,
+        typeId: 'wrecked_car',
         x: px,
         y: py,
         luck: proximityFromCenter(distN),
@@ -162,7 +196,7 @@ export class ResourceManager {
     if (site.hasLoot !== null) {
       return { site, result: 'known' };
     }
-    site.hasLoot = rng() < LOOT_PRESENCE_CHANCE;
+    site.hasLoot = rng() < lootPresenceChance(site.typeId);
     return { site, result: site.hasLoot ? 'has' : 'empty' };
   }
 
@@ -280,13 +314,14 @@ export class ResourceManager {
     this.senseReadyAt = this.gameTime + SURVIVAL_SENSE_COOLDOWN_MS;
     const until = this.gameTime + SURVIVAL_SENSE_REVEAL_MS;
     const found: LootSite[] = [];
+    const senseRadiusPx = visionRadiusPx * SURVIVAL_SENSE_RADIUS_MULT;
 
     for (const s of this.sites) {
       if (s.depleted) continue;
       const d = Math.hypot(s.x - playerX, s.y - playerY);
-      if (d > visionRadiusPx) continue;
+      if (d > senseRadiusPx) continue;
       if (s.hasLoot === null) {
-        s.hasLoot = rng() < LOOT_PRESENCE_CHANCE;
+        s.hasLoot = rng() < lootPresenceChance(s.typeId);
       }
       if (s.hasLoot === true) {
         s.pulseRevealUntil = until;
@@ -330,4 +365,11 @@ export class ResourceManager {
   getInventory() {
     return this.inventory;
   }
+}
+
+function lootPresenceChance(typeId: string): number {
+  if (typeId === 'wrecked_car' || CAR_POI_TYPE_IDS.has(typeId)) {
+    return CAR_LOOT_PRESENCE_CHANCE;
+  }
+  return LOOT_PRESENCE_CHANCE;
 }
