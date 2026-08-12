@@ -173,14 +173,15 @@ export class EnemyManager {
   }
 
   /**
-   * Atrai o zumbi vivo mais próximo do jogador (sem spawnar).
-   * @returns true se havia um inimigo para alertar.
+   * Atrai o zumbi vivo mais próximo que ainda não está a caçar o jogador.
+   * Ignora zumbis já em combate para o barulho chamar reforços.
+   * @returns true se havia um inimigo disponível para alertar.
    */
   alertNearestFromNoise(playerX: number, playerY: number): boolean {
     let nearest: Enemy | null = null;
     let nearestDist = Infinity;
     for (const e of this.enemies) {
-      if (!e.alive) continue;
+      if (!e.alive || e.hunting) continue;
       const d = Math.hypot(e.x - playerX, e.y - playerY);
       if (d < nearestDist) {
         nearestDist = d;
@@ -188,10 +189,8 @@ export class EnemyManager {
       }
     }
     if (!nearest) return false;
-    if (!nearest.hunting) {
-      nearest.alerted = true;
-      nearest.startHunt();
-    }
+    nearest.alerted = true;
+    nearest.startHunt();
     return true;
   }
 

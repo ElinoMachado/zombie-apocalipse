@@ -9,7 +9,7 @@ export interface NoiseRollResult {
   maxHits: number;
   /** Todos os dados = 4 → spawna elite. */
   elite: boolean;
-  /** Algum 4 (mas não 4/4/4/4) → atrai o zumbi mais próximo. */
+  /** Algum 4 (mas não 4/4/4/4) → atrai o zumbi mais próximo que ainda não caça. */
   noiseHeard: boolean;
 }
 
