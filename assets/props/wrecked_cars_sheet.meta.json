@@ -1,0 +1,10 @@
+﻿{
+    "source":  "wrecked_cars_source.png",
+    "cols":  14,
+    "rows":  3,
+    "frameWidth":  73,
+    "frameHeight":  122,
+    "sheetWidth":  1022,
+    "sheetHeight":  366,
+    "cells":  42
+}
