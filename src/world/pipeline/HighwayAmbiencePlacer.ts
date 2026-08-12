@@ -1,6 +1,7 @@
 import type { AmbientProp, City } from '../model/types';
 import { Rng } from '../rng/Rng';
 import { pickWreckedCarFrame } from '../../assets/wreckedCars';
+import { POI_CAR_CLEARANCE_TILES, tooCloseToNonCarPois } from './poiCarClearance';
 import { idx, inBounds, nextId } from './util';
 
 const ORTHO = [
@@ -39,7 +40,13 @@ export function placeHighwayAmbience(city: City, rng: Rng): void {
 
     const roll = rng.next();
     let kind: AmbientProp['kind'];
-    if (roll < 0.28) kind = 'wrecked_car';
+    const canPlaceWreckedCar = !tooCloseToNonCarPois(
+      cell.x,
+      cell.y,
+      city.explorationPoints,
+      POI_CAR_CLEARANCE_TILES,
+    );
+    if (roll < 0.28 && canPlaceWreckedCar) kind = 'wrecked_car';
     else if (roll < 0.42) kind = 'burning_debris';
     else kind = 'debris';
 

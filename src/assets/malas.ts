@@ -1,4 +1,5 @@
 /** Spritesheet 4×2 de malas (POI malas, ex-caçamba). */
+import { stableUprightOrFlatRotation } from './poiCardinalRotation';
 import { stableHash01 } from './wreckedCars';
 
 export const MALAS_COLS = 4;
@@ -24,5 +25,5 @@ export function malasDisplayScale(tileSize: number): number {
 }
 
 export function stableMalasRotation(seed: string): number {
-  return stableHash01(`${seed}:malas-rot`) * Math.PI * 2;
+  return stableUprightOrFlatRotation(seed, 'malas-rot');
 }

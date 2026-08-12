@@ -1,5 +1,6 @@
 import { getExplorations } from '../../world/catalog/structures';
 import type { City, ExplorationPoint } from '../../world/model/types';
+import { poiConflictsWithCars } from '../../world/pipeline/poiCarClearance';
 import { idx, inBounds } from '../../world/pipeline/util';
 
 const GRID_COLS = 4;
@@ -17,12 +18,20 @@ function isStructureTile(city: City, x: number, y: number): boolean {
   return false;
 }
 
-function isTileFree(city: City, x: number, y: number, taken: Set<number>): boolean {
+function isTileFree(
+  city: City,
+  x: number,
+  y: number,
+  typeId: string,
+  existingPois: readonly ExplorationPoint[],
+  taken: Set<number>,
+): boolean {
   const { w, h } = city.grid;
   if (!inBounds(x, y, w, h)) return false;
   const i = idx(x, y, w);
   if (taken.has(i)) return false;
   if (isStructureTile(city, x, y)) return false;
+  if (poiConflictsWithCars(city, x, y, typeId, existingPois)) return false;
   return true;
 }
 
@@ -30,9 +39,11 @@ function findFreeTileNear(
   city: City,
   anchorX: number,
   anchorY: number,
+  typeId: string,
+  existingPois: readonly ExplorationPoint[],
   taken: Set<number>,
 ): { x: number; y: number } | null {
-  if (isTileFree(city, anchorX, anchorY, taken)) {
+  if (isTileFree(city, anchorX, anchorY, typeId, existingPois, taken)) {
     return { x: anchorX, y: anchorY };
   }
   for (let r = 1; r <= 8; r += 1) {
@@ -41,7 +52,7 @@ function findFreeTileNear(
         if (Math.abs(dx) !== r && Math.abs(dy) !== r) continue;
         const x = anchorX + dx;
         const y = anchorY + dy;
-        if (isTileFree(city, x, y, taken)) return { x, y };
+        if (isTileFree(city, x, y, typeId, existingPois, taken)) return { x, y };
       }
     }
   }
@@ -66,7 +77,6 @@ export function injectDevPoiShowcaseNearSpawn(
   for (const poi of city.explorationPoints) {
     taken.add(idx(poi.x, poi.y, city.grid.w));
   }
-
   const added: ExplorationPoint[] = [];
   const originX = centerTx + GRID_OFFSET_TILES;
   const originY = centerTy - GRID_OFFSET_TILES;
@@ -77,7 +87,14 @@ export function injectDevPoiShowcaseNearSpawn(
     const row = Math.floor(i / GRID_COLS);
     const anchorX = originX + col * GRID_STEP_TILES;
     const anchorY = originY + row * GRID_STEP_TILES;
-    const tile = findFreeTileNear(city, anchorX, anchorY, taken);
+    const tile = findFreeTileNear(
+      city,
+      anchorX,
+      anchorY,
+      typeId,
+      [...city.explorationPoints, ...added],
+      taken,
+    );
     if (!tile) continue;
 
     taken.add(idx(tile.x, tile.y, city.grid.w));

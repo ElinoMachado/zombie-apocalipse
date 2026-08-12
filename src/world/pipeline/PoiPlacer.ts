@@ -1,6 +1,7 @@
 import { getExplorations } from '../catalog/structures';
 import type { City, ExplorationPoint, ZoneType } from '../model/types';
 import { Rng } from '../rng/Rng';
+import { poiConflictsWithCars } from './poiCarClearance';
 import { idx, nextId, pointInRect } from './util';
 
 const ZONE_DENSITY: Partial<Record<ZoneType, number>> = {
@@ -78,6 +79,8 @@ export function placeExplorationPoints(city: City, rng: Rng): void {
       (l) => l.structureIds.length === 0 && pointInRect(x, y, l.bounds),
     );
     if (!nearRoad && !inEmptyLot && !rng.chance(0.25)) continue;
+
+    if (poiConflictsWithCars(city, x, y, def.id, points)) continue;
 
     points.push({
       id: nextId('poi'),

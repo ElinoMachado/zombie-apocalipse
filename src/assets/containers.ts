@@ -1,4 +1,5 @@
 /** Spritesheet 2×4 de contentores (POI container). */
+import { stableFlatRotation } from './poiCardinalRotation';
 import { stableHash01 } from './wreckedCars';
 
 export const CONTAINER_COLS = 2;
@@ -24,5 +25,5 @@ export function containerDisplayScale(tileSize: number): number {
 }
 
 export function stableContainerRotation(seed: string): number {
-  return stableHash01(`${seed}:container-rot`) * Math.PI * 2;
+  return stableFlatRotation(seed, 'container-rot');
 }

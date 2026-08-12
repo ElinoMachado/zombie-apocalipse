@@ -1,4 +1,5 @@
 /** Spritesheet 4×2 de mochilas (POI backpack). */
+import { stableUprightOrFlatRotation } from './poiCardinalRotation';
 import { stableHash01 } from './wreckedCars';
 
 export const BACKPACK_COLS = 4;
@@ -24,5 +25,5 @@ export function backpackDisplayScale(tileSize: number): number {
 }
 
 export function stableBackpackRotation(seed: string): number {
-  return stableHash01(`${seed}:backpack-rot`) * Math.PI * 2;
+  return stableUprightOrFlatRotation(seed, 'backpack-rot');
 }
