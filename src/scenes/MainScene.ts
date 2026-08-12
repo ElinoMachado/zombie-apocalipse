@@ -37,6 +37,7 @@ import {
 } from '../game/debug/chatCommands';
 import { CarHitboxOverlay } from '../render/CarHitboxOverlay';
 import { isDevMode } from '../game/dev/isDevMode';
+import { injectDevPoiShowcaseNearSpawn } from '../game/dev/injectDevPoiShowcase';
 import { getDefaultProfileId, listProfiles } from '../world/profiles';
 import {
   formatWorldSummary,
@@ -200,6 +201,7 @@ export class MainScene extends Phaser.Scene {
     this.mainMenu = new MainMenuHud(
       {
         onPlay: () => this.playFromMenu(),
+        onPlayDev: isDevMode() ? () => this.playDevFromMenu() : undefined,
         onWorldGenerator: isDevMode() ? () => this.showWorldGenerator() : undefined,
         onSprites: isDevMode() ? () => this.showSpriteTuning() : undefined,
       },
@@ -497,7 +499,11 @@ export class MainScene extends Phaser.Scene {
     if (on) this.carHitboxOverlay.sync(this.collision.carHitboxes);
   }
 
-  private startGame(sizeClass: CitySizeClass, profileId: string): void {
+  private startGame(
+    sizeClass: CitySizeClass,
+    profileId: string,
+    options?: { devPoiShowcase?: boolean },
+  ): void {
     this.mainMenu.hide();
     this.ui.hide();
     this.endSession(false);
@@ -536,6 +542,12 @@ export class MainScene extends Phaser.Scene {
     );
     const sx = safeSpawn.x;
     const sy = safeSpawn.y;
+
+    if (options?.devPoiShowcase) {
+      injectDevPoiShowcaseNearSpawn(city, sx, sy);
+      this.worldRenderer.bind(city);
+      this.collision.rebuild(city);
+    }
 
     this.player = new Player(this, sx, sy);
     this.floaters = new DamageNumbers(this);
@@ -1257,6 +1269,13 @@ export class MainScene extends Phaser.Scene {
   private playFromMenu(): void {
     this.mainMenu.hide();
     this.startGame('medium', this.getDefaultPlayProfileId());
+  }
+
+  private playDevFromMenu(): void {
+    this.mainMenu.hide();
+    this.startGame('medium', this.getDefaultPlayProfileId(), {
+      devPoiShowcase: true,
+    });
   }
 
   private showWorldGenerator(): void {

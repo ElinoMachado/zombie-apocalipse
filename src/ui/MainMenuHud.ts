@@ -1,5 +1,7 @@
 export interface MainMenuHandlers {
   onPlay: () => void;
+  /** Modo dev: um exemplar de cada POI junto ao spawn. */
+  onPlayDev?: () => void;
   onWorldGenerator?: () => void;
   onSprites?: () => void;
 }
@@ -78,10 +80,13 @@ export class MainMenuHud {
       const genBtn = this.makeButton('World Generator', 'secondary');
       genBtn.addEventListener('click', () => handlers.onWorldGenerator?.());
 
+      const playDevBtn = this.makeButton('Jogar — dev', 'secondary');
+      playDevBtn.addEventListener('click', () => handlers.onPlayDev?.());
+
       const spritesBtn = this.makeButton('Sprites — ajustar hitboxes', 'secondary');
       spritesBtn.addEventListener('click', () => handlers.onSprites?.());
 
-      this.devSection.append(devLabel, genBtn, spritesBtn);
+      this.devSection.append(devLabel, genBtn, playDevBtn, spritesBtn);
       panel.append(this.devSection);
     }
 
