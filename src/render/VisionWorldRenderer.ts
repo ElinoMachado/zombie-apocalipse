@@ -7,6 +7,12 @@ import {
   stableCrateRotation,
 } from '../assets/crateBoxes';
 import {
+  backpackDisplayScale,
+  BACKPACK_POI_TYPE_ID,
+  pickBackpackFrame,
+  stableBackpackRotation,
+} from '../assets/backpacks';
+import {
   CAR_POI_TYPE_IDS,
   pickWreckedCarFrame,
   stableCarRotation,
@@ -566,6 +572,20 @@ export class VisionWorldRenderer {
         const scale = crateBoxDisplayScale(ts);
         const img = this.scene.add.image(px, py, AssetKeys.crateBoxes, frame);
         img.setRotation(stableCrateRotation(poi.id));
+        img.setScale(scale);
+        img.setOrigin(0.5, 0.5);
+        this.propsContainer.add(img);
+        continue;
+      }
+
+      if (
+        poi.typeId === BACKPACK_POI_TYPE_ID &&
+        this.scene.textures.exists(AssetKeys.backpacks)
+      ) {
+        const frame = pickBackpackFrame(poi.id);
+        const scale = backpackDisplayScale(ts);
+        const img = this.scene.add.image(px, py, AssetKeys.backpacks, frame);
+        img.setRotation(stableBackpackRotation(poi.id));
         img.setScale(scale);
         img.setOrigin(0.5, 0.5);
         this.propsContainer.add(img);

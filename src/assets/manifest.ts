@@ -30,6 +30,7 @@ export const AssetKeys = {
   cadaver1: 'props-cadaver1',
   cadaver2: 'props-cadaver2',
   crateBoxes: 'props-crate-boxes',
+  backpacks: 'props-backpacks',
 } as const;
 
 export type AssetKey = (typeof AssetKeys)[keyof typeof AssetKeys];
@@ -97,6 +98,12 @@ export const TILESHEETS: TilesetImageSpec[] = [
     url: 'assets/props/crate_boxes_sheet.png?v=1',
     frameWidth: 244,
     frameHeight: 247,
+  },
+  {
+    key: AssetKeys.backpacks,
+    url: 'assets/props/backpacks_sheet.png?v=1',
+    frameWidth: 235,
+    frameHeight: 268,
   },
 ];
 

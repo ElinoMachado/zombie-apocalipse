@@ -1,0 +1,10 @@
+﻿{
+    "source":  "backpacks_source.png",
+    "cols":  4,
+    "rows":  2,
+    "frameWidth":  235,
+    "frameHeight":  268,
+    "sheetWidth":  940,
+    "sheetHeight":  536,
+    "cells":  8
+}
