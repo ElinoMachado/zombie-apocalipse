@@ -1,0 +1,36 @@
+---
+description: Commit após cada alteração; push ao remoto a cada 5 commits locais.
+alwaysApply: true
+---
+
+# Git — commit por alteração e push a cada 5 commits
+
+Ao trabalhar neste repositório:
+
+## Commit após cada alteração
+
+1. **Sempre** que concluíres uma tarefa com mudanças no código, config ou assets, cria **um commit** antes de dar a tarefa por terminada.
+2. Não deixes alterações só no working tree entre sessões ou tarefas.
+3. Mensagem: 1–2 frases no estilo do repositório, focadas no **porquê** (fix, feat, refactor, etc.).
+4. Respeita `.gitignore` e não commits ficheiros com segredos (`.env`, credenciais, etc.).
+5. Antes de commitar: `git status`, `git diff` (e `git log -1` se útil para o estilo da mensagem).
+
+**Exceção:** o utilizador pede explicitamente para **não** commitar.
+
+## Push a cada 5 commits
+
+Depois de criar o(s) commit(s) da tarefa:
+
+1. **Contar** commits locais ainda não enviados ao remoto:
+   - Preferir: `git rev-list --count @{u}..HEAD` (com upstream, ex.: `origin/main`).
+   - Se `@{u}` não existir: `git rev-list --count origin/main..HEAD` (ou o ramo remoto equivalente).
+2. Se o número for **≥ 5**, executa **`git push`** (ou `git push -u origin <branch>` se ainda não houver upstream).
+3. Push rejeitado (histórico divergente): `git pull --rebase` (ou merge conforme o projeto) e tentar de novo até sucesso ou conflito real.
+
+**Exceções:** não fazer push se o utilizador pedir para não enviar ao remoto, ou se não houver remoto configurado.
+
+## Ordem no fim da tarefa
+
+1. Commit das alterações da tarefa.
+2. Contar commits à frente do remoto.
+3. Se ≥ 5 → `git push`.
