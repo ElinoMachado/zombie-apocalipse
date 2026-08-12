@@ -172,7 +172,7 @@ export class GenerateCityButton {
 
     const hint = document.createElement('div');
     hint.textContent =
-      'Gera o mapa para inspecionar · WASD move a câmara · ESC volta ao menu';
+      'Gera o mapa · WASD move · roda do rato ou [ ] zoom · ESC volta ao menu';
     hint.style.cssText = 'margin-top:8px;font-size:11px;color:#6e7681;';
     this.hintEl = hint;
 

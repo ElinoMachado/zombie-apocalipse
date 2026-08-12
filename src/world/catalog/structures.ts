@@ -797,6 +797,10 @@ export function getPrimaries(): StructureDefinition[] {
   return STRUCTURE_DEFINITIONS.filter((d) => d.category === 'primary');
 }
 
+export function getSecondaries(): StructureDefinition[] {
+  return STRUCTURE_DEFINITIONS.filter((d) => d.category === 'secondary');
+}
+
 export function getExplorations(): StructureDefinition[] {
   return STRUCTURE_DEFINITIONS.filter((d) => d.category === 'exploration');
 }

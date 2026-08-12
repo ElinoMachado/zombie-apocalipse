@@ -16,6 +16,7 @@ import { ResourceManager, SURVIVAL_SENSE_RADIUS_MULT } from '../game/resources/R
 import { WorldCollision } from '../game/WorldCollision';
 import { VisionWorldRenderer } from '../render/VisionWorldRenderer';
 import { GenerateCityButton } from '../ui/GenerateCityButton';
+import { StructureLegend } from '../ui/StructureLegend';
 import { MainMenuHud } from '../ui/MainMenuHud';
 import { SpriteTuningHud } from '../ui/SpriteTuningHud';
 import { MapLegend } from '../ui/MapLegend';
@@ -80,6 +81,10 @@ const PLAY_ZOOM_AT_DAY = 3.5;
 const PLAY_ZOOM_MIN = 1.35;
 const PLAY_ZOOM_MAX = 4.8;
 
+/** Zoom do World Generator — roda do rato / [ ] para inspecionar detalhes. */
+const PREVIEW_ZOOM_MIN = 0.35;
+const PREVIEW_ZOOM_MAX = 10;
+
 /** Maior visão → câmara mais afastada (mais área à volta). */
 function playZoomForVision(visionClearTiles: number): number {
   const outer = visionOuterTiles(Math.max(1, visionClearTiles));
@@ -104,6 +109,7 @@ export class MainScene extends Phaser.Scene {
   private ui!: GenerateCityButton;
   private spriteTuning: SpriteTuningHud | null = null;
   private legend: MapLegend | null = null;
+  private structureLegend: StructureLegend | null = null;
   private weaponHud!: WeaponHud;
   private lootSenseOverlay!: LootSenseOverlay;
   private inventoryHud!: InventoryHud;
@@ -210,6 +216,7 @@ export class MainScene extends Phaser.Scene {
     this.mainMenu.show();
     if (isDevMode()) {
       this.legend = new MapLegend();
+      this.structureLegend = new StructureLegend();
       this.chat = new GameChatHud();
       this.chat.setCanOpen(() => this.playing);
       this.chat.setSubmitHandler((text) => this.handleChatSubmit(text));
@@ -253,6 +260,7 @@ export class MainScene extends Phaser.Scene {
       this.mainMenu.destroy();
       this.ui.destroy();
       this.legend?.destroy();
+      this.structureLegend?.destroy();
       this.weaponHud.destroy();
       this.inventoryHud.destroy();
       this.characterSheet.destroy();
@@ -276,6 +284,20 @@ export class MainScene extends Phaser.Scene {
       Phaser.Cameras.Scene2D.Events.FOLLOW_UPDATE,
       this.snapCameraToScreenPixels,
       this,
+    );
+
+    this.input.on(
+      'wheel',
+      (
+        pointer: Phaser.Input.Pointer,
+        _over: Phaser.GameObjects.GameObject[],
+        _dx: number,
+        dy: number,
+      ) => {
+        if (!this.previewing) return;
+        const factor = dy > 0 ? 0.9 : 1.1;
+        this.adjustPreviewZoom(factor, pointer.x, pointer.y);
+      },
     );
   }
 
@@ -664,6 +686,7 @@ export class MainScene extends Phaser.Scene {
 
     this.worldRenderer.syncPreviewFrame();
     this.legend?.show();
+    this.structureLegend?.show();
 
     this.ui.show();
     this.ui.updateInfo({
@@ -677,8 +700,30 @@ export class MainScene extends Phaser.Scene {
       dump,
     });
     this.ui.setHint(
-      'Mapa gerado — WASD move a câmara · ESC ou Voltar ao menu',
+      'WASD move · roda do rato ou [ ] zoom · legenda à direita · ESC volta',
     );
+  }
+
+  private adjustPreviewZoom(
+    factor: number,
+    focalX = this.cameras.main.width / 2,
+    focalY = this.cameras.main.height / 2,
+  ): void {
+    if (!this.previewing) return;
+    const cam = this.cameras.main;
+    const prevZoom = cam.zoom;
+    const nextZoom = Phaser.Math.Clamp(
+      prevZoom * factor,
+      PREVIEW_ZOOM_MIN,
+      PREVIEW_ZOOM_MAX,
+    );
+    if (Math.abs(nextZoom - prevZoom) < 0.0001) return;
+
+    const worldX = cam.scrollX + focalX / prevZoom;
+    const worldY = cam.scrollY + focalY / prevZoom;
+    cam.setZoom(nextZoom);
+    cam.scrollX = worldX - focalX / nextZoom;
+    cam.scrollY = worldY - focalY / nextZoom;
   }
 
   private buildWorld(
@@ -718,7 +763,7 @@ export class MainScene extends Phaser.Scene {
     cam.setBounds(0, 0, w, h);
     const fitZoom =
       Math.min(this.scale.width / w, this.scale.height / h) * 0.92;
-    cam.setZoom(Phaser.Math.Clamp(fitZoom, 0.35, PLAY_ZOOM_MAX));
+    cam.setZoom(Phaser.Math.Clamp(fitZoom, PREVIEW_ZOOM_MIN, PREVIEW_ZOOM_MAX));
     cam.centerOn(w / 2, h / 2);
   }
 
@@ -726,6 +771,13 @@ export class MainScene extends Phaser.Scene {
     if (!this.previewing || !this.city) return;
 
     const cam = this.cameras.main;
+    if (Phaser.Input.Keyboard.JustDown(this.keys.BRACKET_OPEN)) {
+      this.adjustPreviewZoom(1.12);
+    }
+    if (Phaser.Input.Keyboard.JustDown(this.keys.BRACKET_CLOSE)) {
+      this.adjustPreviewZoom(1 / 1.12);
+    }
+
     const speed = 420 / cam.zoom;
     const dt = delta / 1000;
     let dx = 0;
@@ -1222,6 +1274,7 @@ export class MainScene extends Phaser.Scene {
     this.city = null;
     this.hud.setVisible(false);
     this.legend?.hide();
+    this.structureLegend?.hide();
     this.weaponHud.hide();
     this.inventoryHud.hide();
     this.characterSheet.closeSheet();
@@ -1284,7 +1337,7 @@ export class MainScene extends Phaser.Scene {
     this.ui.clearInfo();
     this.ui.show();
     this.ui.setHint(
-      'Gera o mapa para inspecionar · WASD move a câmara · ESC volta ao menu',
+      'Gera o mapa · WASD move · roda do rato ou [ ] zoom · ESC volta ao menu',
     );
   }
 
