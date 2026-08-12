@@ -25,6 +25,10 @@ export const AssetKeys = {
   farmSheet: 'tiles-farm-sheet',
   dungeon: 'tiles-dungeon',
   wreckedCars: 'props-wrecked-cars',
+  lixeira: 'props-lixeira',
+  gerador: 'props-gerador',
+  cadaver1: 'props-cadaver1',
+  cadaver2: 'props-cadaver2',
 } as const;
 
 export type AssetKey = (typeof AssetKeys)[keyof typeof AssetKeys];
@@ -83,6 +87,10 @@ export const TILESHEETS: TilesetImageSpec[] = [
     frameWidth: 73,
     frameHeight: 122,
   },
+  { key: AssetKeys.lixeira, url: 'assets/props/lixeira.png?v=1' },
+  { key: AssetKeys.gerador, url: 'assets/props/gerador.png?v=1' },
+  { key: AssetKeys.cadaver1, url: 'assets/props/cadaver1.png?v=1' },
+  { key: AssetKeys.cadaver2, url: 'assets/props/cadaver2.png?v=1' },
 ];
 
 export const OPTIONAL_TILESHEETS: TilesetImageSpec[] = [

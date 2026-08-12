@@ -6,6 +6,11 @@ import {
   stableCarRotation,
   wreckedCarDisplayScale,
 } from '../assets/wreckedCars';
+import {
+  getPoiSpriteKey,
+  stablePropRotation,
+  worldPropDisplayScale,
+} from '../assets/worldProps';
 import { terrainTile } from '../assets/TilePalette';
 import {
   chooseRoadTile,
@@ -541,6 +546,17 @@ export class VisionWorldRenderer {
         const scale = wreckedCarDisplayScale(ts);
         const img = this.scene.add.image(px, py, AssetKeys.wreckedCars, frame);
         img.setRotation(stableCarRotation(poi.id));
+        img.setScale(scale);
+        img.setOrigin(0.5, 0.5);
+        this.propsContainer.add(img);
+        continue;
+      }
+
+      const propKey = getPoiSpriteKey(poi.typeId, poi.id);
+      if (propKey && this.scene.textures.exists(propKey)) {
+        const scale = worldPropDisplayScale(ts, propKey);
+        const img = this.scene.add.image(px, py, propKey);
+        img.setRotation(stablePropRotation(poi.id, poi.typeId));
         img.setScale(scale);
         img.setOrigin(0.5, 0.5);
         this.propsContainer.add(img);
