@@ -102,7 +102,7 @@ export class MainScene extends Phaser.Scene {
   private mainMenu!: MainMenuHud;
   private ui!: GenerateCityButton;
   private spriteTuning: SpriteTuningHud | null = null;
-  private legend!: MapLegend;
+  private legend: MapLegend | null = null;
   private weaponHud!: WeaponHud;
   private lootSenseOverlay!: LootSenseOverlay;
   private inventoryHud!: InventoryHud;
@@ -155,7 +155,7 @@ export class MainScene extends Phaser.Scene {
   private dayNight = new DayNightCycle();
   private hud!: Phaser.GameObjects.Text;
   private collision = new WorldCollision();
-  private chat!: GameChatHud;
+  private chat: GameChatHud | null = null;
   private hitboxDebug!: HitboxDebugState;
   private carHitboxOverlay: CarHitboxOverlay | null = null;
 
@@ -206,7 +206,12 @@ export class MainScene extends Phaser.Scene {
       isDevMode(),
     );
     this.mainMenu.show();
-    this.legend = new MapLegend();
+    if (isDevMode()) {
+      this.legend = new MapLegend();
+      this.chat = new GameChatHud();
+      this.chat.setCanOpen(() => this.playing);
+      this.chat.setSubmitHandler((text) => this.handleChatSubmit(text));
+    }
     this.weaponHud = new WeaponHud();
     this.lootSenseOverlay = new LootSenseOverlay();
     this.inventoryHud = new InventoryHud();
@@ -220,9 +225,6 @@ export class MainScene extends Phaser.Scene {
     this.wireCharacterSheet();
     this.wireUiCombatBlock();
     this.hitboxDebug = createHitboxDebugState();
-    this.chat = new GameChatHud();
-    this.chat.setCanOpen(() => this.playing);
-    this.chat.setSubmitHandler((text) => this.handleChatSubmit(text));
 
     this.hud = this.add
       .text(12, 12, '', {
@@ -248,7 +250,7 @@ export class MainScene extends Phaser.Scene {
       this.spriteTuning = null;
       this.mainMenu.destroy();
       this.ui.destroy();
-      this.legend.destroy();
+      this.legend?.destroy();
       this.weaponHud.destroy();
       this.inventoryHud.destroy();
       this.characterSheet.destroy();
@@ -257,7 +259,7 @@ export class MainScene extends Phaser.Scene {
       this.survivalHud.destroy();
       this.dayNightHud.destroy();
       this.diceHud.destroy();
-      this.chat.destroy();
+      this.chat?.destroy();
       this.carHitboxOverlay?.destroy();
       this.carHitboxOverlay = null;
       this.pulseGfx?.destroy();
@@ -277,8 +279,8 @@ export class MainScene extends Phaser.Scene {
 
   update(time: number, delta: number): void {
     if (Phaser.Input.Keyboard.JustDown(this.keys.ESC)) {
-      if (this.chat.isOpen()) {
-        this.chat.close();
+      if (this.isChatOpen()) {
+        this.chat?.close();
         return;
       }
       if (this.characterSheetOpen) {
@@ -304,14 +306,15 @@ export class MainScene extends Phaser.Scene {
       return;
     }
 
-    let chatOpen = this.chat.isOpen();
+    let chatOpen = this.isChatOpen();
 
     if (
+      isDevMode() &&
       !chatOpen &&
       Phaser.Input.Keyboard.JustDown(this.keys.ENTER)
     ) {
       this.openChat();
-      chatOpen = this.chat.isOpen();
+      chatOpen = this.isChatOpen();
     }
 
     if (!chatOpen && Phaser.Input.Keyboard.JustDown(this.keys.I)) {
@@ -383,7 +386,7 @@ export class MainScene extends Phaser.Scene {
       this.time.now >= this.uiCombatBlockUntil &&
       !this.lootPopup.isOpen &&
       !this.characterSheetOpen &&
-      !this.chat.isOpen();
+      !this.isChatOpen();
     this.combat.update(
       delta,
       this.player.x,
@@ -461,23 +464,28 @@ export class MainScene extends Phaser.Scene {
     const itemHint =
       this.time.now < this.itemToastUntil ? ` · ${this.itemToastText}` : '';
     this.syncCarHitboxOverlay();
+    const devHud =
+      isDevMode() && chatOpen ? ' · CHAT ABERTO (Esc fecha) · Enter chat · ' : '';
     this.hud.setText(
       `${this.dayNight.label} · visão ${vision} (${mode})${stance}${
         huntN > 0 ? ` · caça ${huntN}` : ''
-      }${horde}${emptyHint}${levelHint}${itemHint}${
-        chatOpen ? ' · CHAT ABERTO (Esc fecha)' : ''
-      } · Enter chat · I ficha · ESC`,
+      }${horde}${emptyHint}${levelHint}${itemHint}${devHud}I ficha · ESC`,
     );
   }
 
+  private isChatOpen(): boolean {
+    return this.chat?.isOpen() ?? false;
+  }
+
   private handleChatSubmit(text: string): void {
+    if (!this.chat) return;
     const res = parseChatCommand(text, this.hitboxDebug);
     this.chat.appendLine(res.message, res.error ? 'error' : 'system');
     this.syncCarHitboxOverlay();
   }
 
   private openChat(): void {
-    if (!this.playing || this.chat.isOpen()) return;
+    if (!isDevMode() || !this.chat || !this.playing || this.chat.isOpen()) return;
     this.chat.open();
     this.keys.ENTER.reset();
   }
@@ -590,9 +598,9 @@ export class MainScene extends Phaser.Scene {
     this.audio.startMusic();
 
     this.playing = true;
-    this.chat.showLauncher();
+    this.chat?.showLauncher();
     this.ui.hide();
-    this.legend.show();
+    this.legend?.show();
     this.weaponHud.show();
     this.inventoryHud.show();
     this.inventoryHud.sync(this.resources.inventory);
@@ -643,7 +651,7 @@ export class MainScene extends Phaser.Scene {
     this.applyPreviewCamera(city);
 
     this.worldRenderer.syncPreviewFrame();
-    this.legend.show();
+    this.legend?.show();
 
     this.ui.show();
     this.ui.updateInfo({
@@ -1180,7 +1188,7 @@ export class MainScene extends Phaser.Scene {
   private endSession(showUi: boolean): void {
     this.playing = false;
     this.previewing = false;
-    this.chat.hideLauncher();
+    this.chat?.hideLauncher();
     this.carHitboxOverlay?.setVisible(false);
     this.audio.stopMusic();
     this.audio.clearWorldEmitters();
@@ -1201,7 +1209,7 @@ export class MainScene extends Phaser.Scene {
     this.world = null;
     this.city = null;
     this.hud.setVisible(false);
-    this.legend.hide();
+    this.legend?.hide();
     this.weaponHud.hide();
     this.inventoryHud.hide();
     this.characterSheet.closeSheet();
