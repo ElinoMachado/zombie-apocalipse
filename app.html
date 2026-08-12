@@ -103,20 +103,6 @@
   <body>
     <div id="app"></div>
     <div id="ui-root"></div>
-    <script>
-      (function () {
-        var host = location.hostname;
-        var isLocal =
-          host === 'localhost' || host === '127.0.0.1' || location.port === '5173';
-        var inDocs = /\/docs(\/|$)/.test(location.pathname);
-        if (!isLocal && !inDocs) {
-          var base = location.pathname.endsWith('/')
-            ? location.pathname
-            : location.pathname + '/';
-          location.replace(base + 'docs/');
-        }
-      })();
-    </script>
     <script type="module" src="/src/main.ts"></script>
   </body>
 </html>
