@@ -29,6 +29,7 @@ export const AssetKeys = {
   gerador: 'props-gerador',
   cadaver1: 'props-cadaver1',
   cadaver2: 'props-cadaver2',
+  crateBoxes: 'props-crate-boxes',
 } as const;
 
 export type AssetKey = (typeof AssetKeys)[keyof typeof AssetKeys];
@@ -91,6 +92,12 @@ export const TILESHEETS: TilesetImageSpec[] = [
   { key: AssetKeys.gerador, url: 'assets/props/gerador.png?v=1' },
   { key: AssetKeys.cadaver1, url: 'assets/props/cadaver1.png?v=1' },
   { key: AssetKeys.cadaver2, url: 'assets/props/cadaver2.png?v=1' },
+  {
+    key: AssetKeys.crateBoxes,
+    url: 'assets/props/crate_boxes_sheet.png?v=1',
+    frameWidth: 244,
+    frameHeight: 247,
+  },
 ];
 
 export const OPTIONAL_TILESHEETS: TilesetImageSpec[] = [

@@ -1,6 +1,12 @@
 import Phaser from 'phaser';
 import { AssetKeys, GRASS_TILE_SIZE, TILE_ATLAS_MARGIN, TILE_ATLAS_SPACING, TILE_SIZE } from '../assets/manifest';
 import {
+  crateBoxDisplayScale,
+  CRATE_POI_TYPE_ID,
+  pickCrateBoxFrame,
+  stableCrateRotation,
+} from '../assets/crateBoxes';
+import {
   CAR_POI_TYPE_IDS,
   pickWreckedCarFrame,
   stableCarRotation,
@@ -546,6 +552,20 @@ export class VisionWorldRenderer {
         const scale = wreckedCarDisplayScale(ts);
         const img = this.scene.add.image(px, py, AssetKeys.wreckedCars, frame);
         img.setRotation(stableCarRotation(poi.id));
+        img.setScale(scale);
+        img.setOrigin(0.5, 0.5);
+        this.propsContainer.add(img);
+        continue;
+      }
+
+      if (
+        poi.typeId === CRATE_POI_TYPE_ID &&
+        this.scene.textures.exists(AssetKeys.crateBoxes)
+      ) {
+        const frame = pickCrateBoxFrame(poi.id);
+        const scale = crateBoxDisplayScale(ts);
+        const img = this.scene.add.image(px, py, AssetKeys.crateBoxes, frame);
+        img.setRotation(stableCrateRotation(poi.id));
         img.setScale(scale);
         img.setOrigin(0.5, 0.5);
         this.propsContainer.add(img);
