@@ -19,6 +19,12 @@ import {
   stableContainerRotation,
 } from '../assets/containers';
 import {
+  malasDisplayScale,
+  MALAS_POI_TYPE_ID,
+  pickMalasFrame,
+  stableMalasRotation,
+} from '../assets/malas';
+import {
   CAR_POI_TYPE_IDS,
   pickWreckedCarFrame,
   stableCarRotation,
@@ -606,6 +612,20 @@ export class VisionWorldRenderer {
         const scale = containerDisplayScale(ts);
         const img = this.scene.add.image(px, py, AssetKeys.containers, frame);
         img.setRotation(stableContainerRotation(poi.id));
+        img.setScale(scale);
+        img.setOrigin(0.5, 0.5);
+        this.propsContainer.add(img);
+        continue;
+      }
+
+      if (
+        poi.typeId === MALAS_POI_TYPE_ID &&
+        this.scene.textures.exists(AssetKeys.malas)
+      ) {
+        const frame = pickMalasFrame(poi.id);
+        const scale = malasDisplayScale(ts);
+        const img = this.scene.add.image(px, py, AssetKeys.malas, frame);
+        img.setRotation(stableMalasRotation(poi.id));
         img.setScale(scale);
         img.setOrigin(0.5, 0.5);
         this.propsContainer.add(img);

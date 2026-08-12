@@ -20,7 +20,7 @@ export function pickContainerFrame(seed: string): number {
 }
 
 export function containerDisplayScale(tileSize: number): number {
-  return (tileSize * 2.55) / CONTAINER_FRAME_W;
+  return (tileSize * 2.55 * 2) / CONTAINER_FRAME_W;
 }
 
 export function stableContainerRotation(seed: string): number {

@@ -640,8 +640,8 @@ export const STRUCTURE_DEFINITIONS: StructureDefinition[] = [
     scoreWeights: W,
   }),
   def({
-    id: 'dumpster',
-    label: 'Caçamba',
+    id: 'malas',
+    label: 'Malas',
     category: 'exploration',
     footprint: { w: 2, h: 1 },
     color: 0x43a047,

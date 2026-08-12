@@ -20,6 +20,7 @@
     "build:props:crate-boxes": "powershell -ExecutionPolicy Bypass -File tools/tiles/buildCrateBoxSheet.ps1",
     "build:props:backpacks": "powershell -ExecutionPolicy Bypass -File tools/tiles/buildBackpackSheet.ps1",
     "build:props:containers": "powershell -ExecutionPolicy Bypass -File tools/tiles/buildContainerSheet.ps1",
+    "build:props:malas": "powershell -ExecutionPolicy Bypass -File tools/tiles/buildMalasSheet.ps1",
     "build:props:world": "powershell -ExecutionPolicy Bypass -File tools/tiles/buildWorldPropPngs.ps1",
     "sync:audio": "node tools/audio/sync-zombie-sounds.mjs",
     "predev": "node tools/audio/sync-zombie-sounds.mjs",

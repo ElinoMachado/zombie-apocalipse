@@ -20,7 +20,7 @@ export function pickBackpackFrame(seed: string): number {
 }
 
 export function backpackDisplayScale(tileSize: number): number {
-  return (tileSize * 1.45) / BACKPACK_FRAME_W;
+  return (tileSize * 1.45 * 0.75) / BACKPACK_FRAME_W;
 }
 
 export function stableBackpackRotation(seed: string): number {
