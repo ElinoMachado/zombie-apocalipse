@@ -1,0 +1,19 @@
+{
+  "tileSize": 12,
+  "pad": 1,
+  "stride": 14,
+  "margin": 1,
+  "spacing": 2,
+  "columns": 16,
+  "rows": 35,
+  "markModes": {
+    "0": "none",
+    "1": "NS-center",
+    "2": "EW-center",
+    "3": "NS-left",
+    "4": "NS-right",
+    "5": "EW-top",
+    "6": "EW-bottom"
+  },
+  "selection": "frame=(type*7+markMode)*16+mask; type=dominant segment; markMode=centerline+offset"
+}

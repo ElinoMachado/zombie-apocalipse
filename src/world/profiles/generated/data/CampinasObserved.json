@@ -1,0 +1,672 @@
+{
+  "id": "CampinasObserved",
+  "label": "Campinas (núcleo) (OSM-derived)",
+  "version": 1,
+  "origin": "osm-derived",
+  "description": "Derived from Overpass metrics of campinas @ 2026-08-11T15:09:05.301Z. Does not copy geometry.",
+  "insufficient": [
+    {
+      "key": "lots",
+      "reason": "From OSM analysis: lots"
+    },
+    {
+      "key": "poi.fire_station",
+      "reason": "From OSM analysis: poi.fire_station"
+    }
+  ],
+  "roadNetwork": {
+    "meta": {
+      "quality": "observed",
+      "sampleSize": 12760,
+      "confidence": 1,
+      "source": "OSM:campinas",
+      "notes": "Graph: shared-vertex topology (all geometry vertices, ~1.1m snap). Still misses true intersections where ways cross without a shared node."
+    },
+    "regularity": 0.04421056349220366,
+    "deadEndRatio": {
+      "mean": 0.03594534960107917,
+      "median": 0.04,
+      "stdDev": 0.005804480594990742,
+      "p10": 0.027,
+      "p25": 0.03,
+      "p50": 0.04,
+      "p75": 0.0378360488032375,
+      "p90": 0.041619653683561256,
+      "sampleSize": 66471,
+      "confidence": 0.7,
+      "unit": "ratio",
+      "notes": "Shared-vertex road graph (snapped ~1.1m); no artificial downscale"
+    },
+    "intersectionDegree": {
+      "mean": 2.2431436265439064,
+      "median": 2,
+      "stdDev": 0.5920631554303619,
+      "p10": 2,
+      "p25": 2,
+      "p50": 2,
+      "p75": 2,
+      "p90": 3,
+      "sampleSize": 66471,
+      "confidence": 0.7,
+      "unit": "degree",
+      "notes": "Shared-vertex undirected degree"
+    },
+    "segmentLengthTiles": {
+      "mean": 13.979970355999193,
+      "median": 7.466453650448429,
+      "stdDev": 20.097602633581836,
+      "p10": 1.5302749208874695,
+      "p25": 3.153722707441615,
+      "p50": 7.466453650448429,
+      "p75": 17.5096696115776,
+      "p90": 33.334738732190324,
+      "sampleSize": 12760,
+      "confidence": 1,
+      "unit": "tiles",
+      "notes": "OSM way lengths (not block face lengths) (converted m→tiles @ 12m/tile)"
+    },
+    "hierarchyWeights": {
+      "highway": 3,
+      "main": 4,
+      "avenue": 8,
+      "street": 18,
+      "residential": 7
+    }
+  },
+  "blocks": {
+    "meta": {
+      "quality": "observed",
+      "sampleSize": 41251,
+      "confidence": 0.75,
+      "source": "OSM:campinas",
+      "notes": "Blocks ESTIMATED from street-graph faces (intersection-to-intersection); not cadastral parcels."
+    },
+    "areaTiles": {
+      "mean": 61.41767741606769,
+      "median": 36,
+      "stdDev": 106.28555459015267,
+      "p10": 20,
+      "p25": 28,
+      "p50": 36,
+      "p75": 72.07817785006006,
+      "p90": 126.21604735987555,
+      "sampleSize": 41251,
+      "confidence": 0.75,
+      "unit": "tiles²",
+      "notes": "Corner product approximation face_i × face_{i+1} (converted m²→tiles²)"
+    },
+    "aspectRatio": {
+      "mean": 2.681697186389388,
+      "median": 1.8797537555499373,
+      "stdDev": 2.5356614033025746,
+      "p10": 1.0941750783722908,
+      "p25": 1.307758322843247,
+      "p50": 1.8797537555499373,
+      "p75": 3.0036650042506414,
+      "p90": 4,
+      "sampleSize": 41251,
+      "confidence": 0.75,
+      "notes": "max/min of consecutive faces at junction"
+    }
+  },
+  "lots": {
+    "meta": {
+      "quality": "estimated",
+      "sampleSize": 41251,
+      "confidence": 0.5,
+      "notes": "Lots estimated as fractions of street-graph block area (not cadastral)"
+    },
+    "areaByDensity": {
+      "high": {
+        "mean": 33.77972257883723,
+        "median": 17.953221036315085,
+        "stdDev": 58.45705502458397,
+        "p10": 3.364270965256997,
+        "p25": 7.141664863152491,
+        "p50": 17.953221036315085,
+        "p75": 39.642997817533036,
+        "p90": 69.41882604793156,
+        "sampleSize": 41251,
+        "confidence": 0.75,
+        "unit": "tiles²",
+        "notes": "Corner product approximation face_i × face_{i+1} (converted m²→tiles²) ×0.55 lot-from-block"
+      },
+      "medium": {
+        "mean": 42.99237419124738,
+        "median": 22.849554046219197,
+        "stdDev": 74.39988821310686,
+        "p10": 4.281799410327086,
+        "p25": 9.08939164401226,
+        "p50": 22.849554046219197,
+        "p75": 50.454724495042036,
+        "p90": 88.35123315191288,
+        "sampleSize": 41251,
+        "confidence": 0.75,
+        "unit": "tiles²",
+        "notes": "Corner product approximation face_i × face_{i+1} (converted m²→tiles²) ×0.7 lot-from-block"
+      },
+      "low": {
+        "mean": 55.27590967446092,
+        "median": 29.377998059424684,
+        "stdDev": 95.65699913113741,
+        "p10": 5.50517067042054,
+        "p25": 11.686360685158622,
+        "p50": 29.377998059424684,
+        "p75": 64.87036006505406,
+        "p90": 113.594442623888,
+        "sampleSize": 41251,
+        "confidence": 0.75,
+        "unit": "tiles²",
+        "notes": "Corner product approximation face_i × face_{i+1} (converted m²→tiles²) ×0.9 lot-from-block"
+      },
+      "sparse": {
+        "mean": 70.63032902847783,
+        "median": 37.53855307593154,
+        "stdDev": 122.22838777867557,
+        "p10": 7.034384745537356,
+        "p25": 14.93257198659157,
+        "p50": 37.53855307593154,
+        "p75": 82.88990452756906,
+        "p90": 145.14845446385687,
+        "sampleSize": 41251,
+        "confidence": 0.75,
+        "unit": "tiles²",
+        "notes": "Corner product approximation face_i × face_{i+1} (converted m²→tiles²) ×1.15 lot-from-block"
+      }
+    },
+    "emptyLotChanceByDensity": {
+      "high": 0.08,
+      "medium": 0.14,
+      "low": 0.28,
+      "sparse": 0.45
+    }
+  },
+  "buildings": {
+    "meta": {
+      "quality": "observed",
+      "sampleSize": 4575,
+      "confidence": 1,
+      "source": "OSM:campinas",
+      "notes": "Lots: INSUFFICIENT DATA / estimated — Brazilian OSM rarely tags parcels; do not invent lot rules yet"
+    },
+    "footprintArea": {
+      "mean": 3.34244979179728,
+      "median": 1.5783338079623381,
+      "stdDev": 10.472775434053709,
+      "p10": 0.5243124893728809,
+      "p25": 0.9082102598371714,
+      "p50": 1.5783338079623381,
+      "p75": 3.060960578938685,
+      "p90": 5.574305155630363,
+      "sampleSize": 4574,
+      "confidence": 1,
+      "unit": "tiles²",
+      "notes": "Building footprint areas from closed ways (converted m²→tiles²)"
+    }
+  },
+  "density": {
+    "meta": {
+      "quality": "estimated",
+      "sampleSize": 4575,
+      "confidence": 0.3,
+      "notes": "Radial breaks still heuristic; gradient from OSM TBD"
+    },
+    "radialBreaks": [
+      0.18,
+      0.38,
+      0.55
+    ],
+    "ruralEdgeBandFraction": 0.12
+  },
+  "zones": {
+    "meta": {
+      "quality": "estimated",
+      "sampleSize": 17,
+      "confidence": 0.1,
+      "notes": "Zone bands still heuristic; landuse analysis TBD"
+    },
+    "bands": [
+      {
+        "zone": "center",
+        "weight": 1
+      },
+      {
+        "zone": "commercial",
+        "weight": 1.2
+      },
+      {
+        "zone": "mixed",
+        "weight": 1
+      },
+      {
+        "zone": "residential_med",
+        "weight": 1.4
+      },
+      {
+        "zone": "residential_low",
+        "weight": 1.2
+      },
+      {
+        "zone": "suburban",
+        "weight": 0.9
+      },
+      {
+        "zone": "periphery",
+        "weight": 0.8
+      },
+      {
+        "zone": "industrial",
+        "weight": 0.7
+      },
+      {
+        "zone": "rural",
+        "weight": 1.1
+      }
+    ],
+    "neighborhoodPolesBySize": {
+      "small": {
+        "mean": 4,
+        "median": 4,
+        "stdDev": 0.8888888888888886,
+        "p10": 3.06,
+        "p25": 3.4,
+        "p50": 4,
+        "p75": 4.6,
+        "p90": 5.06,
+        "sampleSize": 0,
+        "confidence": 0.2,
+        "notes": "heuristic placeholder"
+      },
+      "medium": {
+        "mean": 6,
+        "median": 6,
+        "stdDev": 1.333333333333333,
+        "p10": 4.59,
+        "p25": 5.1,
+        "p50": 6,
+        "p75": 6.8999999999999995,
+        "p90": 7.59,
+        "sampleSize": 0,
+        "confidence": 0.2,
+        "notes": "heuristic placeholder"
+      },
+      "large": {
+        "mean": 8,
+        "median": 8,
+        "stdDev": 1.7777777777777772,
+        "p10": 6.12,
+        "p25": 6.8,
+        "p50": 8,
+        "p75": 9.2,
+        "p90": 10.12,
+        "sampleSize": 0,
+        "confidence": 0.2,
+        "notes": "heuristic placeholder"
+      }
+    }
+  },
+  "centers": {
+    "meta": {
+      "quality": "estimated",
+      "sampleSize": 0,
+      "confidence": 0.2,
+      "notes": "Subcenter count estimated from amenity density"
+    },
+    "centerRadiusNorm": {
+      "mean": 0.16,
+      "median": 0.16,
+      "stdDev": 0.05925925925925927,
+      "p10": 0.108,
+      "p25": 0.12,
+      "p50": 0.16,
+      "p75": 0.2,
+      "p90": 0.22000000000000003,
+      "sampleSize": 0,
+      "confidence": 0.2,
+      "notes": "heuristic placeholder"
+    },
+    "subcenterCount": {
+      "mean": 6.333333333333333,
+      "median": 6,
+      "stdDev": 2.222222222222222,
+      "p10": 4.5,
+      "p25": 5,
+      "p50": 6,
+      "p75": 8,
+      "p90": 8.8,
+      "sampleSize": 0,
+      "confidence": 0.2,
+      "notes": "heuristic placeholder"
+    }
+  },
+  "transitions": {
+    "meta": {
+      "quality": "heuristic",
+      "sampleSize": 0,
+      "confidence": 0
+    },
+    "smoothPasses": 1
+  },
+  "poiRules": [
+    {
+      "structureId": "hospital",
+      "meta": {
+        "quality": "observed",
+        "sampleSize": 23,
+        "confidence": 0.575,
+        "source": "OSM:campinas"
+      },
+      "preferredZones": [
+        "center",
+        "commercial",
+        "mixed",
+        "residential_med"
+      ],
+      "preferredRoadTypes": [
+        "avenue",
+        "main"
+      ],
+      "minRoadAccess": 0.08,
+      "distanceToMajorRoad": {
+        "mean": 5.394484234844341,
+        "median": 4.075769712530024,
+        "stdDev": 6.642432945769883,
+        "p10": 1.7582171758300167,
+        "p25": 2.6046342203042556,
+        "p50": 4.075769712530024,
+        "p75": 4.812579110363855,
+        "p90": 6.347463822973368,
+        "sampleSize": 23,
+        "confidence": 0.575,
+        "unit": "tiles",
+        "notes": "Distance to nearest major highway=* way (converted m→tiles @ 12m/tile)"
+      }
+    },
+    {
+      "structureId": "clinic",
+      "meta": {
+        "quality": "observed",
+        "sampleSize": 159,
+        "confidence": 1,
+        "source": "OSM:campinas"
+      },
+      "preferredZones": [
+        "commercial",
+        "mixed",
+        "residential_med",
+        "center"
+      ],
+      "preferredRoadTypes": [
+        "avenue",
+        "street",
+        "main"
+      ],
+      "minRoadAccess": 0.08,
+      "distanceToMajorRoad": {
+        "mean": 3.3207814008376073,
+        "median": 1.8853981804625073,
+        "stdDev": 3.3314864566953264,
+        "p10": 0.9567112153562919,
+        "p25": 1.3552195853691729,
+        "p50": 1.8853981804625073,
+        "p75": 3.645440909763257,
+        "p90": 8.408181210841347,
+        "sampleSize": 159,
+        "confidence": 1,
+        "unit": "tiles",
+        "notes": "Distance to nearest major highway=* way (converted m→tiles @ 12m/tile)"
+      }
+    },
+    {
+      "structureId": "pharmacy",
+      "meta": {
+        "quality": "observed",
+        "sampleSize": 78,
+        "confidence": 1,
+        "source": "OSM:campinas"
+      },
+      "preferredZones": [
+        "commercial",
+        "mixed",
+        "residential_med",
+        "center"
+      ],
+      "preferredRoadTypes": [
+        "street",
+        "avenue"
+      ],
+      "minRoadAccess": 0.08,
+      "distanceToMajorRoad": {
+        "mean": 1.354269033238113,
+        "median": 1.3652835297398032,
+        "stdDev": 0.49231694043287044,
+        "p10": 0.7204964745348922,
+        "p25": 1.0050956694006676,
+        "p50": 1.3652835297398032,
+        "p75": 1.6850558354576812,
+        "p90": 1.9845878562988197,
+        "sampleSize": 78,
+        "confidence": 1,
+        "unit": "tiles",
+        "notes": "Distance to nearest major highway=* way (converted m→tiles @ 12m/tile)"
+      }
+    },
+    {
+      "structureId": "police",
+      "meta": {
+        "quality": "observed",
+        "sampleSize": 18,
+        "confidence": 0.45,
+        "source": "OSM:campinas"
+      },
+      "preferredZones": [
+        "center",
+        "commercial",
+        "mixed"
+      ],
+      "preferredRoadTypes": [
+        "avenue",
+        "main"
+      ],
+      "minRoadAccess": 0.08,
+      "distanceToMajorRoad": {
+        "mean": 4.2568124491252375,
+        "median": 2.9524579017990242,
+        "stdDev": 3.23061722593245,
+        "p10": 1.26284796187481,
+        "p25": 1.911074740354455,
+        "p50": 2.9524579017990242,
+        "p75": 7.4381920087104545,
+        "p90": 8.96388258124721,
+        "sampleSize": 18,
+        "confidence": 0.45,
+        "unit": "tiles",
+        "notes": "Distance to nearest major highway=* way (converted m→tiles @ 12m/tile)"
+      }
+    },
+    {
+      "structureId": "fire_station",
+      "meta": {
+        "quality": "insufficient",
+        "sampleSize": 3,
+        "confidence": 0,
+        "source": "OSM:campinas",
+        "notes": "INSUFFICIENT DATA: n=3 — distribution unreliable"
+      },
+      "preferredZones": [
+        "mixed",
+        "industrial",
+        "commercial",
+        "center"
+      ],
+      "preferredRoadTypes": [
+        "avenue",
+        "main"
+      ],
+      "minRoadAccess": 0.08
+    },
+    {
+      "structureId": "school",
+      "meta": {
+        "quality": "observed",
+        "sampleSize": 113,
+        "confidence": 1,
+        "source": "OSM:campinas"
+      },
+      "preferredZones": [
+        "residential_med",
+        "residential_low",
+        "mixed",
+        "suburban"
+      ],
+      "preferredRoadTypes": [
+        "avenue",
+        "street",
+        "main"
+      ],
+      "minRoadAccess": 0.08,
+      "distanceToMajorRoad": {
+        "mean": 5.390263901283461,
+        "median": 3.129445513858594,
+        "stdDev": 6.005706879018567,
+        "p10": 1.1928196647372507,
+        "p25": 1.8933191210469655,
+        "p50": 3.129445513858594,
+        "p75": 5.786177909818072,
+        "p90": 13.120143175943264,
+        "sampleSize": 113,
+        "confidence": 1,
+        "unit": "tiles",
+        "notes": "Distance to nearest major highway=* way (converted m→tiles @ 12m/tile)"
+      }
+    },
+    {
+      "structureId": "gas_station",
+      "meta": {
+        "quality": "observed",
+        "sampleSize": 88,
+        "confidence": 1,
+        "source": "OSM:campinas"
+      },
+      "preferredZones": [
+        "commercial",
+        "periphery",
+        "industrial",
+        "suburban",
+        "mixed"
+      ],
+      "preferredRoadTypes": [
+        "main",
+        "avenue",
+        "highway"
+      ],
+      "minRoadAccess": 0.08,
+      "distanceToMajorRoad": {
+        "mean": 1.4410692811372066,
+        "median": 1.3403180747938042,
+        "stdDev": 0.7488653262783483,
+        "p10": 0.7793348790051313,
+        "p25": 1.08258890703985,
+        "p50": 1.3403180747938042,
+        "p75": 1.72925630196501,
+        "p90": 2.05369517504965,
+        "sampleSize": 88,
+        "confidence": 1,
+        "unit": "tiles",
+        "notes": "Distance to nearest major highway=* way (converted m→tiles @ 12m/tile)"
+      }
+    },
+    {
+      "structureId": "market",
+      "meta": {
+        "quality": "observed",
+        "sampleSize": 70,
+        "confidence": 1,
+        "source": "OSM:campinas"
+      },
+      "preferredZones": [
+        "commercial",
+        "mixed",
+        "center",
+        "residential_med"
+      ],
+      "preferredRoadTypes": [
+        "avenue",
+        "street",
+        "main"
+      ],
+      "minRoadAccess": 0.08,
+      "distanceToMajorRoad": {
+        "mean": 2.794948460809651,
+        "median": 1.999497995060211,
+        "stdDev": 2.4873422165481034,
+        "p10": 0.760508781149077,
+        "p25": 1.2470361474696992,
+        "p50": 1.999497995060211,
+        "p75": 3.349486223327306,
+        "p90": 6.150341477914044,
+        "sampleSize": 70,
+        "confidence": 1,
+        "unit": "tiles",
+        "notes": "Distance to nearest major highway=* way (converted m→tiles @ 12m/tile)"
+      }
+    },
+    {
+      "structureId": "church",
+      "meta": {
+        "quality": "observed",
+        "sampleSize": 99,
+        "confidence": 1,
+        "source": "OSM:campinas"
+      },
+      "preferredZones": [
+        "residential_low",
+        "residential_med",
+        "suburban",
+        "mixed"
+      ],
+      "preferredRoadTypes": [
+        "street",
+        "avenue"
+      ],
+      "minRoadAccess": 0.08,
+      "distanceToMajorRoad": {
+        "mean": 4.139960785106328,
+        "median": 2.388218162495576,
+        "stdDev": 4.260021566585104,
+        "p10": 0.9141198237322067,
+        "p25": 1.3686727800618812,
+        "p50": 2.388218162495576,
+        "p75": 5.556940197430457,
+        "p90": 9.683238454705354,
+        "sampleSize": 99,
+        "confidence": 1,
+        "unit": "tiles",
+        "notes": "Distance to nearest major highway=* way (converted m→tiles @ 12m/tile)"
+      }
+    }
+  ],
+  "dependencies": [
+    {
+      "parentId": "gas_station",
+      "childId": "convenience",
+      "chance": 0.85,
+      "min": 0,
+      "max": 1
+    },
+    {
+      "parentId": "farm",
+      "childId": "barn",
+      "chance": 0.9,
+      "min": 1,
+      "max": 1
+    },
+    {
+      "parentId": "hospital",
+      "childId": "parking_lot",
+      "chance": 0.9,
+      "min": 1,
+      "max": 1
+    }
+  ]
+}

@@ -1,0 +1,4 @@
+# raw-metrics
+
+Saída por cidade da ferramenta de análise OSM (Fase 3).
+Ficheiros grandes / PBF: ver `.gitignore`.

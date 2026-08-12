@@ -1,0 +1,12 @@
+{
+  "id": "HeuristicV1",
+  "label": "Heurística v1 (pré-OSM)",
+  "version": 1,
+  "origin": "heuristic",
+  "note": "Canonical TS source: src/world/profiles/HeuristicV1.ts — this JSON is a mirror for tools/inspection.",
+  "insufficient": [
+    "osm.roads",
+    "osm.blocks",
+    "osm.pois"
+  ]
+}

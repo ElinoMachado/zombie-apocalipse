@@ -1,0 +1,662 @@
+{
+  "id": "ItuiutabaObserved",
+  "label": "Ituiutaba (núcleo) (OSM-derived)",
+  "version": 1,
+  "origin": "osm-derived",
+  "description": "Derived from Overpass metrics of ituiutaba @ 2026-08-11T15:07:29.786Z. Does not copy geometry.",
+  "insufficient": [
+    {
+      "key": "lots",
+      "reason": "From OSM analysis: lots"
+    },
+    {
+      "key": "poi.clinic",
+      "reason": "From OSM analysis: poi.clinic"
+    },
+    {
+      "key": "poi.police",
+      "reason": "From OSM analysis: poi.police"
+    },
+    {
+      "key": "poi.fire_station",
+      "reason": "From OSM analysis: poi.fire_station"
+    },
+    {
+      "key": "poi.university",
+      "reason": "From OSM analysis: poi.university"
+    },
+    {
+      "key": "poi.convenience",
+      "reason": "From OSM analysis: poi.convenience"
+    }
+  ],
+  "roadNetwork": {
+    "meta": {
+      "quality": "observed",
+      "sampleSize": 3080,
+      "confidence": 1,
+      "source": "OSM:ituiutaba",
+      "notes": "Graph: shared-vertex topology (all geometry vertices, ~1.1m snap). Still misses true intersections where ways cross without a shared node."
+    },
+    "regularity": 0.23681175015810987,
+    "deadEndRatio": {
+      "mean": 0.03449587634496696,
+      "median": 0.04,
+      "stdDev": 0.0025834289147413873,
+      "p10": 0.027,
+      "p25": 0.03,
+      "p50": 0.04,
+      "p75": 0.03348762903490087,
+      "p90": 0.036836391938390965,
+      "sampleSize": 12206,
+      "confidence": 0.7,
+      "unit": "ratio",
+      "notes": "Shared-vertex road graph (snapped ~1.1m); no artificial downscale"
+    },
+    "intersectionDegree": {
+      "mean": 2.4607570047517613,
+      "median": 2,
+      "stdDev": 0.768314691117077,
+      "p10": 2,
+      "p25": 2,
+      "p50": 2,
+      "p75": 3,
+      "p90": 4,
+      "sampleSize": 12206,
+      "confidence": 0.7,
+      "unit": "degree",
+      "notes": "Shared-vertex undirected degree"
+    },
+    "segmentLengthTiles": {
+      "mean": 20.798108125682592,
+      "median": 13.638701201870882,
+      "stdDev": 28.40194492451188,
+      "p10": 1.6795630105091381,
+      "p25": 5.907864110361782,
+      "p50": 13.638701201870882,
+      "p75": 26.704183479285415,
+      "p90": 45.695456643852744,
+      "sampleSize": 3080,
+      "confidence": 1,
+      "unit": "tiles",
+      "notes": "OSM way lengths (not block face lengths) (converted m→tiles @ 12m/tile)"
+    },
+    "hierarchyWeights": {
+      "highway": 1,
+      "main": 1,
+      "avenue": 9,
+      "street": 25,
+      "residential": 5
+    }
+  },
+  "blocks": {
+    "meta": {
+      "quality": "observed",
+      "sampleSize": 12988,
+      "confidence": 0.75,
+      "source": "OSM:ituiutaba",
+      "notes": "Blocks ESTIMATED from street-graph faces (intersection-to-intersection); not cadastral parcels."
+    },
+    "areaTiles": {
+      "mean": 73.23695470331549,
+      "median": 56.27156691472305,
+      "stdDev": 100.95189335129739,
+      "p10": 20,
+      "p25": 28,
+      "p50": 56.27156691472305,
+      "p75": 90.01033757665772,
+      "p90": 125.55977047093964,
+      "sampleSize": 12988,
+      "confidence": 0.75,
+      "unit": "tiles²",
+      "notes": "Corner product approximation face_i × face_{i+1} (converted m²→tiles²)"
+    },
+    "aspectRatio": {
+      "mean": 2.420714960456657,
+      "median": 1.8323443675931383,
+      "stdDev": 1.9875322739658867,
+      "p10": 1.0683159454439295,
+      "p25": 1.2839123948868951,
+      "p50": 1.8323443675931383,
+      "p75": 2.777909195116245,
+      "p90": 4,
+      "sampleSize": 12988,
+      "confidence": 0.75,
+      "notes": "max/min of consecutive faces at junction"
+    }
+  },
+  "lots": {
+    "meta": {
+      "quality": "estimated",
+      "sampleSize": 12988,
+      "confidence": 0.5,
+      "notes": "Lots estimated as fractions of street-graph block area (not cadastral)"
+    },
+    "areaByDensity": {
+      "high": {
+        "mean": 40.280325086823524,
+        "median": 30.94936180309768,
+        "stdDev": 55.523541343213566,
+        "p10": 6.714944416868192,
+        "p25": 14.71796393283988,
+        "p50": 30.94936180309768,
+        "p75": 49.50568566716175,
+        "p90": 69.0578737590168,
+        "sampleSize": 12988,
+        "confidence": 0.75,
+        "unit": "tiles²",
+        "notes": "Corner product approximation face_i × face_{i+1} (converted m²→tiles²) ×0.55 lot-from-block"
+      },
+      "medium": {
+        "mean": 51.26586829232084,
+        "median": 39.390096840306136,
+        "stdDev": 70.66632534590816,
+        "p10": 8.546292894195881,
+        "p25": 18.73195409634166,
+        "p50": 39.390096840306136,
+        "p75": 63.0072363036604,
+        "p90": 87.89183932965774,
+        "sampleSize": 12988,
+        "confidence": 0.75,
+        "unit": "tiles²",
+        "notes": "Corner product approximation face_i × face_{i+1} (converted m²→tiles²) ×0.7 lot-from-block"
+      },
+      "low": {
+        "mean": 65.91325923298395,
+        "median": 50.64441022325075,
+        "stdDev": 90.85670401616765,
+        "p10": 10.988090863966132,
+        "p25": 24.08394098101071,
+        "p50": 50.64441022325075,
+        "p75": 81.00930381899195,
+        "p90": 113.00379342384568,
+        "sampleSize": 12988,
+        "confidence": 0.75,
+        "unit": "tiles²",
+        "notes": "Corner product approximation face_i × face_{i+1} (converted m²→tiles²) ×0.9 lot-from-block"
+      },
+      "sparse": {
+        "mean": 84.22249790881281,
+        "median": 64.71230195193151,
+        "stdDev": 116.09467735399198,
+        "p10": 14.040338326178945,
+        "p25": 30.773924586847013,
+        "p50": 64.71230195193151,
+        "p75": 103.51188821315637,
+        "p90": 144.39373604158058,
+        "sampleSize": 12988,
+        "confidence": 0.75,
+        "unit": "tiles²",
+        "notes": "Corner product approximation face_i × face_{i+1} (converted m²→tiles²) ×1.15 lot-from-block"
+      }
+    },
+    "emptyLotChanceByDensity": {
+      "high": 0.08,
+      "medium": 0.14,
+      "low": 0.28,
+      "sparse": 0.45
+    }
+  },
+  "buildings": {
+    "meta": {
+      "quality": "observed",
+      "sampleSize": 5530,
+      "confidence": 1,
+      "source": "OSM:ituiutaba",
+      "notes": "Lots: INSUFFICIENT DATA / estimated — Brazilian OSM rarely tags parcels; do not invent lot rules yet"
+    },
+    "footprintArea": {
+      "mean": 0.9589490051198276,
+      "median": 0.4019306296692829,
+      "stdDev": 3.1442221400932713,
+      "p10": 0.3106228168201341,
+      "p25": 0.3536185423338136,
+      "p50": 0.4019306296692829,
+      "p75": 0.7197862297118578,
+      "p90": 1.3607268005755542,
+      "sampleSize": 5530,
+      "confidence": 1,
+      "unit": "tiles²",
+      "notes": "Building footprint areas from closed ways (converted m²→tiles²)"
+    }
+  },
+  "density": {
+    "meta": {
+      "quality": "estimated",
+      "sampleSize": 5530,
+      "confidence": 0.3,
+      "notes": "Radial breaks still heuristic; gradient from OSM TBD"
+    },
+    "radialBreaks": [
+      0.18,
+      0.38,
+      0.55
+    ],
+    "ruralEdgeBandFraction": 0.18
+  },
+  "zones": {
+    "meta": {
+      "quality": "estimated",
+      "sampleSize": 0,
+      "confidence": 0.1,
+      "notes": "Zone bands still heuristic; landuse analysis TBD"
+    },
+    "bands": [
+      {
+        "zone": "center",
+        "weight": 1
+      },
+      {
+        "zone": "commercial",
+        "weight": 1.2
+      },
+      {
+        "zone": "mixed",
+        "weight": 1
+      },
+      {
+        "zone": "residential_med",
+        "weight": 1.4
+      },
+      {
+        "zone": "residential_low",
+        "weight": 1.2
+      },
+      {
+        "zone": "suburban",
+        "weight": 0.9
+      },
+      {
+        "zone": "periphery",
+        "weight": 0.8
+      },
+      {
+        "zone": "industrial",
+        "weight": 0.7
+      },
+      {
+        "zone": "rural",
+        "weight": 1.1
+      }
+    ],
+    "neighborhoodPolesBySize": {
+      "small": {
+        "mean": 2,
+        "median": 2,
+        "stdDev": 0.4444444444444443,
+        "p10": 1.53,
+        "p25": 1.7,
+        "p50": 2,
+        "p75": 2.3,
+        "p90": 2.53,
+        "sampleSize": 0,
+        "confidence": 0.2,
+        "notes": "heuristic placeholder"
+      },
+      "medium": {
+        "mean": 4,
+        "median": 4,
+        "stdDev": 0.8888888888888886,
+        "p10": 3.06,
+        "p25": 3.4,
+        "p50": 4,
+        "p75": 4.6,
+        "p90": 5.06,
+        "sampleSize": 0,
+        "confidence": 0.2,
+        "notes": "heuristic placeholder"
+      },
+      "large": {
+        "mean": 6,
+        "median": 6,
+        "stdDev": 1.333333333333333,
+        "p10": 4.59,
+        "p25": 5.1,
+        "p50": 6,
+        "p75": 6.8999999999999995,
+        "p90": 7.59,
+        "sampleSize": 0,
+        "confidence": 0.2,
+        "notes": "heuristic placeholder"
+      }
+    }
+  },
+  "centers": {
+    "meta": {
+      "quality": "estimated",
+      "sampleSize": 0,
+      "confidence": 0.2,
+      "notes": "Subcenter count estimated from amenity density"
+    },
+    "centerRadiusNorm": {
+      "mean": 0.16,
+      "median": 0.16,
+      "stdDev": 0.05925925925925927,
+      "p10": 0.108,
+      "p25": 0.12,
+      "p50": 0.16,
+      "p75": 0.2,
+      "p90": 0.22000000000000003,
+      "sampleSize": 0,
+      "confidence": 0.2,
+      "notes": "heuristic placeholder"
+    },
+    "subcenterCount": {
+      "mean": 4.333333333333333,
+      "median": 4,
+      "stdDev": 2.222222222222222,
+      "p10": 2.7,
+      "p25": 3,
+      "p50": 4,
+      "p75": 6,
+      "p90": 6.6000000000000005,
+      "sampleSize": 0,
+      "confidence": 0.2,
+      "notes": "heuristic placeholder"
+    }
+  },
+  "transitions": {
+    "meta": {
+      "quality": "heuristic",
+      "sampleSize": 0,
+      "confidence": 0
+    },
+    "smoothPasses": 1
+  },
+  "poiRules": [
+    {
+      "structureId": "hospital",
+      "meta": {
+        "quality": "observed",
+        "sampleSize": 5,
+        "confidence": 0.25,
+        "source": "OSM:ituiutaba"
+      },
+      "preferredZones": [
+        "center",
+        "commercial",
+        "mixed",
+        "residential_med"
+      ],
+      "preferredRoadTypes": [
+        "avenue",
+        "main"
+      ],
+      "minRoadAccess": 0.08,
+      "distanceToMajorRoad": {
+        "mean": 6.063203621944051,
+        "median": 4.974887506463117,
+        "stdDev": 2.9185327047667626,
+        "p10": 3.4621071347824803,
+        "p25": 3.8834706891611988,
+        "p50": 4.974887506463117,
+        "p75": 8.460689943928244,
+        "p90": 9.27373910055391,
+        "sampleSize": 5,
+        "confidence": 0.25,
+        "unit": "tiles",
+        "notes": "Distance to nearest major highway=* way (converted m→tiles @ 12m/tile)"
+      }
+    },
+    {
+      "structureId": "clinic",
+      "meta": {
+        "quality": "insufficient",
+        "sampleSize": 2,
+        "confidence": 0,
+        "source": "OSM:ituiutaba",
+        "notes": "INSUFFICIENT DATA: n=2 — distribution unreliable"
+      },
+      "preferredZones": [
+        "commercial",
+        "mixed",
+        "residential_med",
+        "center"
+      ],
+      "preferredRoadTypes": [
+        "avenue",
+        "street",
+        "main"
+      ],
+      "minRoadAccess": 0.08
+    },
+    {
+      "structureId": "pharmacy",
+      "meta": {
+        "quality": "observed",
+        "sampleSize": 23,
+        "confidence": 0.575,
+        "source": "OSM:ituiutaba"
+      },
+      "preferredZones": [
+        "commercial",
+        "mixed",
+        "residential_med",
+        "center"
+      ],
+      "preferredRoadTypes": [
+        "street",
+        "avenue"
+      ],
+      "minRoadAccess": 0.08,
+      "distanceToMajorRoad": {
+        "mean": 1.1394275262632676,
+        "median": 1.0756799464119595,
+        "stdDev": 0.3869885149775157,
+        "p10": 0.7111395545739678,
+        "p25": 0.8468033884856192,
+        "p50": 1.0756799464119595,
+        "p75": 1.2895149407090545,
+        "p90": 1.642486453037358,
+        "sampleSize": 23,
+        "confidence": 0.575,
+        "unit": "tiles",
+        "notes": "Distance to nearest major highway=* way (converted m→tiles @ 12m/tile)"
+      }
+    },
+    {
+      "structureId": "police",
+      "meta": {
+        "quality": "insufficient",
+        "sampleSize": 0,
+        "confidence": 0,
+        "source": "OSM:ituiutaba",
+        "notes": "INSUFFICIENT DATA: zero features tagged for this group"
+      },
+      "preferredZones": [
+        "center",
+        "commercial",
+        "mixed"
+      ],
+      "preferredRoadTypes": [
+        "avenue",
+        "main"
+      ],
+      "minRoadAccess": 0.08
+    },
+    {
+      "structureId": "fire_station",
+      "meta": {
+        "quality": "insufficient",
+        "sampleSize": 1,
+        "confidence": 0,
+        "source": "OSM:ituiutaba",
+        "notes": "INSUFFICIENT DATA: n=1 — distribution unreliable"
+      },
+      "preferredZones": [
+        "mixed",
+        "industrial",
+        "commercial",
+        "center"
+      ],
+      "preferredRoadTypes": [
+        "avenue",
+        "main"
+      ],
+      "minRoadAccess": 0.08
+    },
+    {
+      "structureId": "school",
+      "meta": {
+        "quality": "observed",
+        "sampleSize": 5,
+        "confidence": 0.25,
+        "source": "OSM:ituiutaba"
+      },
+      "preferredZones": [
+        "residential_med",
+        "residential_low",
+        "mixed",
+        "suburban"
+      ],
+      "preferredRoadTypes": [
+        "avenue",
+        "street",
+        "main"
+      ],
+      "minRoadAccess": 0.08,
+      "distanceToMajorRoad": {
+        "mean": 5.216119484740159,
+        "median": 4.6027866323291216,
+        "stdDev": 4.501055688225285,
+        "p10": 0.9144498013997451,
+        "p25": 0.9778469271862041,
+        "p50": 4.6027866323291216,
+        "p75": 8.933510255773507,
+        "p90": 9.989965236831317,
+        "sampleSize": 5,
+        "confidence": 0.25,
+        "unit": "tiles",
+        "notes": "Distance to nearest major highway=* way (converted m→tiles @ 12m/tile)"
+      }
+    },
+    {
+      "structureId": "gas_station",
+      "meta": {
+        "quality": "observed",
+        "sampleSize": 27,
+        "confidence": 0.675,
+        "source": "OSM:ituiutaba"
+      },
+      "preferredZones": [
+        "commercial",
+        "periphery",
+        "industrial",
+        "suburban",
+        "mixed"
+      ],
+      "preferredRoadTypes": [
+        "main",
+        "avenue",
+        "highway"
+      ],
+      "minRoadAccess": 0.08,
+      "distanceToMajorRoad": {
+        "mean": 1.9424463470675164,
+        "median": 1.5388754352820861,
+        "stdDev": 1.2496761033336845,
+        "p10": 1.1238849002522342,
+        "p25": 1.3445673503562616,
+        "p50": 1.5388754352820861,
+        "p75": 1.9391095525569402,
+        "p90": 3.027223834700712,
+        "sampleSize": 27,
+        "confidence": 0.675,
+        "unit": "tiles",
+        "notes": "Distance to nearest major highway=* way (converted m→tiles @ 12m/tile)"
+      }
+    },
+    {
+      "structureId": "market",
+      "meta": {
+        "quality": "observed",
+        "sampleSize": 37,
+        "confidence": 0.925,
+        "source": "OSM:ituiutaba"
+      },
+      "preferredZones": [
+        "commercial",
+        "mixed",
+        "center",
+        "residential_med"
+      ],
+      "preferredRoadTypes": [
+        "avenue",
+        "street",
+        "main"
+      ],
+      "minRoadAccess": 0.08,
+      "distanceToMajorRoad": {
+        "mean": 7.305844868790403,
+        "median": 4.726157942790752,
+        "stdDev": 7.106260659388627,
+        "p10": 1.189791761071332,
+        "p25": 1.7622006335437834,
+        "p50": 4.726157942790752,
+        "p75": 13.185547363619351,
+        "p90": 17.77936050084029,
+        "sampleSize": 37,
+        "confidence": 0.925,
+        "unit": "tiles",
+        "notes": "Distance to nearest major highway=* way (converted m→tiles @ 12m/tile)"
+      }
+    },
+    {
+      "structureId": "church",
+      "meta": {
+        "quality": "observed",
+        "sampleSize": 6,
+        "confidence": 0.25,
+        "source": "OSM:ituiutaba"
+      },
+      "preferredZones": [
+        "residential_low",
+        "residential_med",
+        "suburban",
+        "mixed"
+      ],
+      "preferredRoadTypes": [
+        "street",
+        "avenue"
+      ],
+      "minRoadAccess": 0.08,
+      "distanceToMajorRoad": {
+        "mean": 12.484919543340725,
+        "median": 9.146230138718396,
+        "stdDev": 11.058212168298416,
+        "p10": 3.739534572101315,
+        "p25": 4.626520699670152,
+        "p50": 9.146230138718396,
+        "p75": 16.353075022498647,
+        "p90": 24.568993919202466,
+        "sampleSize": 6,
+        "confidence": 0.25,
+        "unit": "tiles",
+        "notes": "Distance to nearest major highway=* way (converted m→tiles @ 12m/tile)"
+      }
+    }
+  ],
+  "dependencies": [
+    {
+      "parentId": "gas_station",
+      "childId": "convenience",
+      "chance": 0.85,
+      "min": 0,
+      "max": 1
+    },
+    {
+      "parentId": "farm",
+      "childId": "barn",
+      "chance": 0.9,
+      "min": 1,
+      "max": 1
+    },
+    {
+      "parentId": "hospital",
+      "childId": "parking_lot",
+      "chance": 0.9,
+      "min": 1,
+      "max": 1
+    }
+  ]
+}

@@ -1,0 +1,34 @@
+{
+  "name": "como-sobreviver-ao-apocalipse",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "analyze:city": "tsx tools/urban-analysis/src/cli.ts",
+    "analyze:all": "tsx tools/urban-analysis/src/cliAnalyzeAll.ts",
+    "build:profiles": "tsx tools/urban-analysis/src/cliBuildProfiles.ts",
+    "build:tiles:roads": "tsx tools/tiles/generateRoadTileset.ts",
+    "build:tiles:sidewalks": "tsx tools/tiles/generateSidewalkTileset.ts",
+    "build:tiles": "npm run build:tiles:roads && npm run build:tiles:sidewalks",
+    "build:props:wrecked-cars": "powershell -ExecutionPolicy Bypass -File tools/tiles/buildWreckedCarSheet.ps1",
+    "sync:audio": "node tools/audio/sync-zombie-sounds.mjs",
+    "predev": "node tools/audio/sync-zombie-sounds.mjs"
+  },
+  "dependencies": {
+    "phaser": "^3.87.0"
+  },
+  "devDependencies": {
+    "@turf/turf": "^7.4.0",
+    "@types/pngjs": "^6.0.5",
+    "pngjs": "^7.0.0",
+    "tsx": "^4.23.12",
+    "typescript": "^5.7.3",
+    "vite": "^6.0.7",
+    "vitest": "^3.0.5"
+  }
+}

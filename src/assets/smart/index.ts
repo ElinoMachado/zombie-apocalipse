@@ -1,0 +1,36 @@
+export {
+  DIR,
+  neighborMask4,
+  frameFromRowMask,
+  resolveSmartTile,
+  type TilePlacement,
+  type SmartTileRule,
+} from './SmartTile';
+export {
+  roadSmartRule,
+  chooseRoadTile,
+  roadTileFrame,
+  roadFrameIndex,
+  roadNeighborMask,
+  markModeForCell,
+  inferMarkAxis,
+  isMarkCenterline,
+  dominantSegment,
+  dominantRoadType,
+  centerlineCell,
+  withRoadSegmentIndex,
+  buildRoadSegmentIndex,
+  ROAD_TYPE_INDEX,
+  ROAD_TILE_ROW,
+  ROAD_MASK,
+  ROAD_AUTOTILE_COLS,
+  ROAD_MARK_MODES,
+} from './RoadSmartTile';
+export {
+  sidewalkSmartRule,
+  chooseSidewalkTile,
+  sidewalkFrameIndex,
+  sidewalkNeighborMask,
+  SIDEWALK_AUTOTILE_COLS,
+  SIDEWALK_MASK,
+} from './SidewalkSmartTile';

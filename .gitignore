@@ -1,0 +1,10 @@
+node_modules
+dist
+.DS_Store
+*.local
+.vite
+
+# OSM / analysis (Fase 3+)
+*.osm.pbf
+*.osm
+tools/urban-analysis/cache/

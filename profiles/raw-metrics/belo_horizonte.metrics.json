@@ -1,0 +1,463 @@
+{
+  "cityId": "belo_horizonte",
+  "label": "Belo Horizonte (hipercentro)",
+  "generatedAt": "2026-08-11T15:09:59.056Z",
+  "bbox": [
+    -19.935,
+    -43.95,
+    -19.91,
+    -43.925
+  ],
+  "source": {
+    "overpassCached": true,
+    "cachePath": "C:\\Users\\elino\\projetos\\ComoSobreviverAoApocalipse\\tools\\urban-analysis\\cache\\belo_horizonte.overpass.json",
+    "elementCount": 16507
+  },
+  "layers": {
+    "roads": 9025,
+    "buildings": 5352,
+    "amenities": 1933,
+    "shops": 639,
+    "landuse": 21
+  },
+  "roads": {
+    "meta": {
+      "quality": "observed",
+      "sampleSize": 9025,
+      "confidence": 1,
+      "notes": [
+        "Graph: shared-vertex topology (all geometry vertices, ~1.1m snap). Still misses true intersections where ways cross without a shared node."
+      ]
+    },
+    "totalLengthKm": 1144.5441963013197,
+    "count": 9025,
+    "byClass": {
+      "tertiary": {
+        "count": 1503,
+        "lengthKm": 185.31227855781842
+      },
+      "trunk": {
+        "count": 146,
+        "lengthKm": 21.733624654016893
+      },
+      "primary": {
+        "count": 539,
+        "lengthKm": 63.976594694265366
+      },
+      "secondary": {
+        "count": 762,
+        "lengthKm": 76.53732345307631
+      },
+      "residential": {
+        "count": 3469,
+        "lengthKm": 595.4372039173954
+      },
+      "other": {
+        "count": 1381,
+        "lengthKm": 100.65810950636153
+      },
+      "service": {
+        "count": 1180,
+        "lengthKm": 95.53842231290798
+      },
+      "motorway": {
+        "count": 8,
+        "lengthKm": 1.8789647262062805
+      },
+      "unclassified": {
+        "count": 37,
+        "lengthKm": 3.4716744792725036
+      }
+    },
+    "segmentLengthM": {
+      "mean": 126.81930152923222,
+      "median": 74.16489972441472,
+      "stdDev": 169.2331546954624,
+      "p10": 13.234805878166274,
+      "p25": 25.494454305003817,
+      "p50": 74.16489972441472,
+      "p75": 154.331093754104,
+      "p90": 294.88293146195207,
+      "sampleSize": 9025,
+      "confidence": 1,
+      "unit": "m",
+      "notes": "OSM way lengths (not block face lengths)"
+    },
+    "bearingDegrees": {
+      "mean": 172.18821697980133,
+      "median": 170.15263416539062,
+      "stdDev": 105.28166644424223,
+      "p10": 26.095628912756233,
+      "p25": 80.85654659991769,
+      "p50": 170.15263416539062,
+      "p75": 264.4885828726268,
+      "p90": 325.87047075411397,
+      "sampleSize": 26445,
+      "confidence": 1,
+      "unit": "deg"
+    },
+    "regularityIndex": 0.20479401693241736,
+    "graph": {
+      "nodeCount": 30077,
+      "edgeCount": 35596,
+      "meanDegree": 2.3669913887688265,
+      "deadEndRatio": 0.03667254047943611,
+      "degreeDistribution": {
+        "mean": 2.3669913887688265,
+        "median": 2,
+        "stdDev": 0.719301213883203,
+        "p10": 2,
+        "p25": 2,
+        "p50": 2,
+        "p75": 3,
+        "p90": 3,
+        "sampleSize": 30077,
+        "confidence": 0.7,
+        "unit": "degree",
+        "notes": "Shared-vertex undirected degree"
+      }
+    }
+  },
+  "blocks": {
+    "meta": {
+      "quality": "observed",
+      "sampleSize": 23661,
+      "confidence": 0.75,
+      "notes": [
+        "Blocks ESTIMATED from street-graph faces (intersection-to-intersection); not cadastral parcels."
+      ]
+    },
+    "faceLengthM": {
+      "mean": 85.2820155493658,
+      "median": 71.50334682098246,
+      "stdDev": 70.88146505030623,
+      "p10": 21.011778013488076,
+      "p25": 36.322836192124996,
+      "p50": 71.50334682098246,
+      "p75": 114.82112009168644,
+      "p90": 150.31377652100522,
+      "sampleSize": 12758,
+      "confidence": 0.75,
+      "unit": "m",
+      "notes": "Intersection-to-intersection face length"
+    },
+    "areaM2": {
+      "mean": 7772.385934503038,
+      "median": 4843.995571506674,
+      "stdDev": 11296.298573655486,
+      "p10": 783.7370835634368,
+      "p25": 1904.1316374197027,
+      "p50": 4843.995571506674,
+      "p75": 10234.595726837542,
+      "p90": 16656.264004240897,
+      "sampleSize": 23661,
+      "confidence": 0.75,
+      "unit": "m²",
+      "notes": "Corner product approximation face_i × face_{i+1}"
+    },
+    "aspectRatio": {
+      "mean": 2.544709683610312,
+      "median": 1.7429053952512925,
+      "stdDev": 2.4026324443551776,
+      "p10": 1.0838883977726712,
+      "p25": 1.2794771264696587,
+      "p50": 1.7429053952512925,
+      "p75": 2.774223699540567,
+      "p90": 4.990812652943562,
+      "sampleSize": 23661,
+      "confidence": 0.75,
+      "notes": "max/min of consecutive faces at junction"
+    }
+  },
+  "buildings": {
+    "meta": {
+      "quality": "observed",
+      "sampleSize": 5352,
+      "polygonCount": 5352,
+      "pointOnlyCount": 0,
+      "confidence": 1,
+      "notes": [
+        "Lots: INSUFFICIENT DATA / estimated — Brazilian OSM rarely tags parcels; do not invent lot rules yet"
+      ]
+    },
+    "areaM2": {
+      "mean": 473.1016738118891,
+      "median": 250.02000957723016,
+      "stdDev": 959.5521706362155,
+      "p10": 83.06287582293571,
+      "p25": 145.33930193233383,
+      "p50": 250.02000957723016,
+      "p75": 453.8453129381489,
+      "p90": 902.9899345670433,
+      "sampleSize": 5348,
+      "confidence": 1,
+      "unit": "m²",
+      "notes": "Building footprint areas from closed ways"
+    },
+    "lots": {
+      "quality": "insufficient",
+      "notes": "INSUFFICIENT DATA: no reliable lot geometries; footprint≠lot. Marked estimated until better source."
+    }
+  },
+  "pois": {
+    "meta": {
+      "amenityCount": 1933,
+      "shopCount": 639,
+      "notes": []
+    },
+    "groups": {
+      "hospital": {
+        "count": 50,
+        "quality": "observed",
+        "confidence": 1,
+        "distanceToNearestMajorRoadM": {
+          "mean": 63.12210370197333,
+          "median": 48.901295872492696,
+          "stdDev": 57.99067869155516,
+          "p10": 15.978022736172433,
+          "p25": 27.45492134472159,
+          "p50": 48.901295872492696,
+          "p75": 73.80737157497406,
+          "p90": 123.35808727129684,
+          "sampleSize": 50,
+          "confidence": 1,
+          "unit": "m",
+          "notes": "Distance to nearest major highway=* way"
+        },
+        "notes": []
+      },
+      "clinic": {
+        "count": 31,
+        "quality": "observed",
+        "confidence": 0.775,
+        "distanceToNearestMajorRoadM": {
+          "mean": 53.011718868565346,
+          "median": 40.94271859407688,
+          "stdDev": 45.95220679698331,
+          "p10": 14.605004239484716,
+          "p25": 19.65073924786124,
+          "p50": 40.94271859407688,
+          "p75": 66.12484638763797,
+          "p90": 102.9119229905123,
+          "sampleSize": 31,
+          "confidence": 0.775,
+          "unit": "m",
+          "notes": "Distance to nearest major highway=* way"
+        },
+        "notes": []
+      },
+      "pharmacy": {
+        "count": 79,
+        "quality": "observed",
+        "confidence": 1,
+        "distanceToNearestMajorRoadM": {
+          "mean": 33.33959781002031,
+          "median": 16.75247594835678,
+          "stdDev": 52.412193136770654,
+          "p10": 7.597942106027444,
+          "p25": 11.361267017869459,
+          "p50": 16.75247594835678,
+          "p75": 27.203465883417856,
+          "p90": 66.36838025782859,
+          "sampleSize": 79,
+          "confidence": 1,
+          "unit": "m",
+          "notes": "Distance to nearest major highway=* way"
+        },
+        "notes": []
+      },
+      "police": {
+        "count": 19,
+        "quality": "observed",
+        "confidence": 0.475,
+        "distanceToNearestMajorRoadM": {
+          "mean": 32.60510012210334,
+          "median": 24.1538742206039,
+          "stdDev": 23.618865935988094,
+          "p10": 11.321127350630167,
+          "p25": 18.68598270363549,
+          "p50": 24.1538742206039,
+          "p75": 38.07713412622111,
+          "p90": 69.56750468625867,
+          "sampleSize": 19,
+          "confidence": 0.475,
+          "unit": "m",
+          "notes": "Distance to nearest major highway=* way"
+        },
+        "notes": []
+      },
+      "fire_station": {
+        "count": 3,
+        "quality": "insufficient",
+        "confidence": 0,
+        "notes": [
+          "INSUFFICIENT DATA: n=3 — distribution unreliable"
+        ]
+      },
+      "school": {
+        "count": 104,
+        "quality": "observed",
+        "confidence": 1,
+        "distanceToNearestMajorRoadM": {
+          "mean": 78.39973605614068,
+          "median": 49.4426934076312,
+          "stdDev": 90.98033524486581,
+          "p10": 10.725067084451942,
+          "p25": 29.917956110401658,
+          "p50": 49.4426934076312,
+          "p75": 81.49696022874606,
+          "p90": 160.57965420367663,
+          "sampleSize": 104,
+          "confidence": 1,
+          "unit": "m",
+          "notes": "Distance to nearest major highway=* way"
+        },
+        "notes": []
+      },
+      "university": {
+        "count": 31,
+        "quality": "observed",
+        "confidence": 0.775,
+        "distanceToNearestMajorRoadM": {
+          "mean": 68.51912995553226,
+          "median": 39.39784623238727,
+          "stdDev": 75.4057610471408,
+          "p10": 18.27212854404241,
+          "p25": 31.279780922249103,
+          "p50": 39.39784623238727,
+          "p75": 81.23630949617299,
+          "p90": 117.06868790060827,
+          "sampleSize": 31,
+          "confidence": 0.775,
+          "unit": "m",
+          "notes": "Distance to nearest major highway=* way"
+        },
+        "notes": []
+      },
+      "fuel": {
+        "count": 66,
+        "quality": "observed",
+        "confidence": 1,
+        "distanceToNearestMajorRoadM": {
+          "mean": 23.19397965552647,
+          "median": 16.040184499288696,
+          "stdDev": 41.07994303322321,
+          "p10": 10.257172345508932,
+          "p25": 13.231788943852898,
+          "p50": 16.040184499288696,
+          "p75": 21.158007577037832,
+          "p90": 25.206167442211715,
+          "sampleSize": 66,
+          "confidence": 1,
+          "unit": "m",
+          "notes": "Distance to nearest major highway=* way"
+        },
+        "notes": []
+      },
+      "parking": {
+        "count": 153,
+        "quality": "observed",
+        "confidence": 1,
+        "distanceToNearestMajorRoadM": {
+          "mean": 81.87343105611532,
+          "median": 36.28226366591992,
+          "stdDev": 171.26489762547757,
+          "p10": 12.834139381425997,
+          "p25": 20.587363270273965,
+          "p50": 36.28226366591992,
+          "p75": 69.47556429548537,
+          "p90": 113.34460918041339,
+          "sampleSize": 153,
+          "confidence": 1,
+          "unit": "m",
+          "notes": "Distance to nearest major highway=* way"
+        },
+        "notes": []
+      },
+      "place_of_worship": {
+        "count": 61,
+        "quality": "observed",
+        "confidence": 1,
+        "distanceToNearestMajorRoadM": {
+          "mean": 71.183988902456,
+          "median": 53.810033699319455,
+          "stdDev": 66.06138521311432,
+          "p10": 19.97291126651782,
+          "p25": 30.205913660125386,
+          "p50": 53.810033699319455,
+          "p75": 81.34933510922417,
+          "p90": 144.97711041227527,
+          "sampleSize": 61,
+          "confidence": 1,
+          "unit": "m",
+          "notes": "Distance to nearest major highway=* way"
+        },
+        "notes": []
+      },
+      "supermarket": {
+        "count": 84,
+        "quality": "observed",
+        "confidence": 1,
+        "distanceToNearestMajorRoadM": {
+          "mean": 49.129452951338116,
+          "median": 25.832770119448874,
+          "stdDev": 71.55151236773557,
+          "p10": 9.91291482589954,
+          "p25": 15.474297081324014,
+          "p50": 25.832770119448874,
+          "p75": 45.61597761828089,
+          "p90": 101.02724752939793,
+          "sampleSize": 84,
+          "confidence": 1,
+          "unit": "m",
+          "notes": "Distance to nearest major highway=* way"
+        },
+        "notes": []
+      },
+      "convenience": {
+        "count": 13,
+        "quality": "observed",
+        "confidence": 0.25,
+        "distanceToNearestMajorRoadM": {
+          "mean": 58.38785819374573,
+          "median": 18.496498692319793,
+          "stdDev": 131.91482695201196,
+          "p10": 7.0303491769520665,
+          "p25": 12.289258988648303,
+          "p50": 18.496498692319793,
+          "p75": 33.08861852078277,
+          "p90": 60.14818339681813,
+          "sampleSize": 13,
+          "confidence": 0.25,
+          "unit": "m",
+          "notes": "Distance to nearest major highway=* way"
+        },
+        "notes": []
+      },
+      "restaurant": {
+        "count": 580,
+        "quality": "observed",
+        "confidence": 1,
+        "distanceToNearestMajorRoadM": {
+          "mean": 39.35905170828663,
+          "median": 16.407647340677975,
+          "stdDev": 74.61612697556512,
+          "p10": 6.196905060786938,
+          "p25": 10.03809749259411,
+          "p50": 16.407647340677975,
+          "p75": 36.99330355834644,
+          "p90": 103.6284743946575,
+          "sampleSize": 580,
+          "confidence": 1,
+          "unit": "m",
+          "notes": "Distance to nearest major highway=* way"
+        },
+        "notes": []
+      }
+    }
+  },
+  "insufficientSummary": [
+    "lots",
+    "poi.fire_station"
+  ]
+}
