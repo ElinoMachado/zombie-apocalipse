@@ -520,7 +520,7 @@ function pickAnchorInBand(opts: {
 function canPlaceHordeMember(
   x: number,
   y: number,
-  prox: number,
+  _prox: number,
   opts: {
     band: EnemyDensityBand;
     city: City;

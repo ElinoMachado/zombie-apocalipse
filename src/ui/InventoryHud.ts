@@ -1,4 +1,4 @@
-import { formatGameNumber, formatGamePercent } from '../game/formatNumbers';
+import { formatGameNumber } from '../game/formatNumbers';
 import type { Inventory } from '../game/inventory/inventory';
 import {
   ITEMS,

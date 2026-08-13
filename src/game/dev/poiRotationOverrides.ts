@@ -58,7 +58,7 @@ export function clearAllRuntimePoiRotationOverrides(): void {
   localStorage.removeItem(STORAGE_KEY);
 }
 
-function formatOverrideValue(key: string, value: unknown): string {
+function formatOverrideValue(_key: string, value: unknown): string {
   if (typeof value === 'number') {
     return (Math.round(value * 10000) / 10000).toString();
   }

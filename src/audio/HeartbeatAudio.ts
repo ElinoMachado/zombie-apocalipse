@@ -37,7 +37,6 @@ export class HeartbeatAudio {
   private readonly scene: Phaser.Scene;
   private phase: Phase = 'idle';
   private phaseLeftSec = 0;
-  private activeTier: HeartbeatTier | null = null;
   private activeSound: Phaser.Sound.BaseSound | null = null;
   private muted = false;
 
@@ -51,12 +50,11 @@ export class HeartbeatAudio {
   }
 
   /** Chamado sempre que o jogador perde HP (após aplicar dano). */
-  onDamage(hp: number, maxHp: number): void {
+  onDamage(hp: number, _maxHp: number): void {
     if (this.muted || hp <= 0) return;
     this.stopActiveSound();
     this.phase = 'attacked';
     this.phaseLeftSec = HEARTBEAT_ATTACKED_SEC;
-    this.activeTier = null;
     this.playKey(HeartbeatKeys.attacked, 0.72);
   }
 
@@ -76,7 +74,6 @@ export class HeartbeatAudio {
         return;
       }
       this.phase = 'tier';
-      this.activeTier = tier;
       this.phaseLeftSec = HEARTBEAT_TIER_SEC[tier];
       this.playKey(TIER_KEY[tier], 0.68);
       return;
@@ -85,7 +82,6 @@ export class HeartbeatAudio {
     if (this.phase === 'tier') {
       this.stopActiveSound();
       this.phase = 'idle';
-      this.activeTier = null;
     }
   }
 
@@ -93,7 +89,6 @@ export class HeartbeatAudio {
     this.stopActiveSound();
     this.phase = 'idle';
     this.phaseLeftSec = 0;
-    this.activeTier = null;
   }
 
   destroy(): void {

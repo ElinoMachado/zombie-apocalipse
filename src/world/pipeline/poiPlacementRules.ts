@@ -230,7 +230,7 @@ function pointInRect(x: number, y: number, r: Rect): boolean {
 }
 
 function isIndustrialContext(
-  city: City,
+  _city: City,
   x: number,
   y: number,
   zone: ZoneType,
@@ -242,7 +242,7 @@ function isIndustrialContext(
 }
 
 function isCommercialContext(
-  city: City,
+  _city: City,
   x: number,
   y: number,
   zone: ZoneType,

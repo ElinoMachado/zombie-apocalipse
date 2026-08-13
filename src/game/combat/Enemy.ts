@@ -804,7 +804,6 @@ export class Enemy {
           worldW,
           worldH,
         );
-        const planned = Math.hypot(wantX, wantY);
         const blocked = moved.blocked;
         if (blocked) {
           if (chasing) {

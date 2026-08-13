@@ -31,7 +31,7 @@ interface RoadAmbienceConfig {
  * Highways têm mais carros; ruas urbanas têm menos.
  */
 export function placeHighwayAmbience(city: City, rng: Rng): void {
-  const { w, h } = city.grid;
+  const { w } = city.grid;
   const occupied = new Set<number>();
   const props: AmbientProp[] = [];
 
@@ -102,7 +102,7 @@ function scatterRoadAmbience(
   occupied: Set<number>,
   cfg: RoadAmbienceConfig,
 ): void {
-  const { w, h } = city.grid;
+  const { w } = city.grid;
   const cells = collectRoadCells(city, cfg.roads);
   for (let i = 0; i < cells.length; i += cfg.step) {
     if (!rng.chance(cfg.spawnChance)) continue;
