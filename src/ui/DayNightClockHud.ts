@@ -19,7 +19,7 @@ export class DayNightClockHud {
     this.root = document.createElement('div');
     this.root.style.cssText = [
       'position:absolute',
-      'top:12px',
+      'top:30px',
       'right:12px',
       'display:none',
       'flex-direction:column',
