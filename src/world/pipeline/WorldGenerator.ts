@@ -3,7 +3,13 @@ import {
   getPrimaries,
   getStructureDef,
 } from '../catalog/structures';
-import type { City, CitySizeClass, GenerateWorldOptions, World } from '../model/types';
+import {
+  DEFAULT_PLAY_CITY_SIZE,
+  type City,
+  type CitySizeClass,
+  type GenerateWorldOptions,
+  type World,
+} from '../model/types';
 import {
   getDefaultProfileId,
   getProfile,
@@ -26,10 +32,8 @@ import { generateZones } from './ZoneGenerator';
 
 function pickSizeClass(rng: Rng, forced?: CitySizeClass): CitySizeClass {
   if (forced) return forced;
-  const r = rng.next();
-  if (r < 0.2) return 'small';
-  if (r < 0.75) return 'medium';
-  return 'large';
+  void rng;
+  return DEFAULT_PLAY_CITY_SIZE;
 }
 
 function buildCity(

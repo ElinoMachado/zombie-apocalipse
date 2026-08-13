@@ -82,9 +82,12 @@ export function rollLootWithIntellect(
   intellectScore: number,
   rng = Math.random,
   lootTalents?: LootTalentMods,
+  proximityLootBonus = 0,
 ): LootRollResult[] {
   const mod =
-    attributeModifier(intellectScore) + (lootTalents?.rollBonus ?? 0);
+    attributeModifier(intellectScore) +
+    (lootTalents?.rollBonus ?? 0) +
+    Math.max(0, proximityLootBonus);
   const naturalRoll = rollDie(LOOT_DIE_SIDES, rng);
   const total = naturalRoll + mod;
   let rarity = rarityFromLootTotal(total);
@@ -143,5 +146,5 @@ export function rollLoot(
 
 /** Densidade de pontos de busca no mapa (por célula amostrada). */
 export function lootSiteDensityWeight(proximity: number): number {
-  return 0.12 + proximity * proximity * 0.88;
+  return 0.015 + proximity * 0.985;
 }

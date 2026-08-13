@@ -12,6 +12,9 @@ export interface SurvivalHealTarget {
   maxStamina: number;
 }
 
+/** Intervalo entre ticks de dano por sangramento (s). */
+export const BLEED_DAMAGE_INTERVAL_SEC = 60;
+
 export class SurvivalState {
   /** 0–100 (100 = saciado). */
   hunger = 100;
@@ -80,6 +83,12 @@ export class SurvivalState {
     return Math.max(0, armor);
   }
 
+  /** Para sangramento (pano, bandagem, etc.). */
+  stopBleeding(): void {
+    this.bleeding = false;
+    this.bleedTick = 0;
+  }
+
   update(deltaMs: number, target: SurvivalHealTarget): void {
     this.gameTimeMs += deltaMs;
     const dt = deltaMs / 1000;
@@ -93,8 +102,8 @@ export class SurvivalState {
 
     if (this.bleeding && target.alive) {
       this.bleedTick += dt;
-      while (this.bleedTick >= 2.5) {
-        this.bleedTick -= 2.5;
+      while (this.bleedTick >= BLEED_DAMAGE_INTERVAL_SEC) {
+        this.bleedTick -= BLEED_DAMAGE_INTERVAL_SEC;
         target.takeDamage(1);
         if (
           this.infection === 'none' &&

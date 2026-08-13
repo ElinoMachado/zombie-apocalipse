@@ -1,4 +1,8 @@
 /** Chaves e caminhos dos assets em /public/assets (servidos na raiz). */
+import {
+  WRECKED_CAR_FRAME_H,
+  WRECKED_CAR_FRAME_W,
+} from './wreckedCars';
 
 /** Tamanho do tile de estrada (= city.tileSize por defeito). */
 export const TILE_SIZE = 12;
@@ -25,14 +29,15 @@ export const AssetKeys = {
   farmSheet: 'tiles-farm-sheet',
   dungeon: 'tiles-dungeon',
   wreckedCars: 'props-wrecked-cars',
-  lixeira: 'props-lixeira',
-  gerador: 'props-gerador',
-  cadaver1: 'props-cadaver1',
-  cadaver2: 'props-cadaver2',
+  lixeiras: 'props-lixeiras',
+  geradores: 'props-geradores',
+  pessoasMortas: 'props-pessoas-mortas',
   crateBoxes: 'props-crate-boxes',
   backpacks: 'props-backpacks',
   containers: 'props-containers',
   malas: 'props-malas',
+  cofres: 'props-cofres',
+  maquinas: 'props-maquinas',
 } as const;
 
 export type AssetKey = (typeof AssetKeys)[keyof typeof AssetKeys];
@@ -87,37 +92,63 @@ export const TILESHEETS: TilesetImageSpec[] = [
   },
   {
     key: AssetKeys.wreckedCars,
-    url: 'assets/props/wrecked_cars_sheet.png?v=3',
-    frameWidth: 73,
-    frameHeight: 122,
+    url: 'assets/props/wrecked_cars_sheet.png?v=7',
+    frameWidth: WRECKED_CAR_FRAME_W,
+    frameHeight: WRECKED_CAR_FRAME_H,
   },
-  { key: AssetKeys.lixeira, url: 'assets/props/lixeira.png?v=2' },
-  { key: AssetKeys.gerador, url: 'assets/props/gerador.png?v=2' },
-  { key: AssetKeys.cadaver1, url: 'assets/props/cadaver1.png?v=2' },
-  { key: AssetKeys.cadaver2, url: 'assets/props/cadaver2.png?v=2' },
+  {
+    key: AssetKeys.lixeiras,
+    url: 'assets/props/lixeira_sheet.png?v=4',
+    frameWidth: 361,
+    frameHeight: 461,
+  },
+  {
+    key: AssetKeys.geradores,
+    url: 'assets/props/geradores_sheet.png?v=4',
+    frameWidth: 437,
+    frameHeight: 341,
+  },
+  {
+    key: AssetKeys.pessoasMortas,
+    url: 'assets/props/pessoas_mortas_sheet.png?v=4',
+    frameWidth: 384,
+    frameHeight: 469,
+  },
   {
     key: AssetKeys.crateBoxes,
-    url: 'assets/props/crate_boxes_sheet.png?v=1',
-    frameWidth: 244,
-    frameHeight: 247,
+    url: 'assets/props/crate_boxes_sheet.png?v=4',
+    frameWidth: 379,
+    frameHeight: 382,
   },
   {
     key: AssetKeys.backpacks,
-    url: 'assets/props/backpacks_sheet.png?v=1',
-    frameWidth: 235,
-    frameHeight: 268,
+    url: 'assets/props/backpacks_sheet.png?v=4',
+    frameWidth: 363,
+    frameHeight: 415,
   },
   {
     key: AssetKeys.containers,
-    url: 'assets/props/containers_sheet.png?v=1',
-    frameWidth: 434,
-    frameHeight: 256,
+    url: 'assets/props/containers_sheet.png?v=4',
+    frameWidth: 538,
+    frameHeight: 313,
   },
   {
     key: AssetKeys.malas,
-    url: 'assets/props/malas_sheet.png?v=1',
-    frameWidth: 256,
-    frameHeight: 324,
+    url: 'assets/props/malas_sheet.png?v=4',
+    frameWidth: 384,
+    frameHeight: 491,
+  },
+  {
+    key: AssetKeys.cofres,
+    url: 'assets/props/cofre_sheet.png?v=1',
+    frameWidth: 390,
+    frameHeight: 370,
+  },
+  {
+    key: AssetKeys.maquinas,
+    url: 'assets/props/machine_sheet.png?v=1',
+    frameWidth: 284,
+    frameHeight: 421,
   },
 ];
 

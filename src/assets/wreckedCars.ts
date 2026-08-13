@@ -3,8 +3,8 @@ import { getRuntimeProfileOverride } from '../game/dev/wreckedCarProfileOverride
 
 export const WRECKED_CAR_COLS = 14;
 export const WRECKED_CAR_ROWS = 3;
-export const WRECKED_CAR_FRAME_W = 73;
-export const WRECKED_CAR_FRAME_H = 122;
+export const WRECKED_CAR_FRAME_W = 110;
+export const WRECKED_CAR_FRAME_H = 183;
 
 /** Todas as linhas da folha são variantes top-down. */
 export const WRECKED_CAR_ROW_START = 0;

@@ -1,12 +1,12 @@
-# Converte props de POI (lixeira, gerador, cadáveres) para PNG RGBA com fundo transparente.
+# Converte props de POI para PNG RGBA preservando alpha da fonte (sem chroma key).
 Add-Type -AssemblyName System.Drawing
 
 $root = Split-Path (Split-Path $PSScriptRoot -Parent) -Parent
 $propsDir = Join-Path $root "public/assets/props"
 $names = @('lixeira', 'gerador', 'cadaver1', 'cadaver2')
 
-function IsKeyColor([System.Drawing.Color]$c) {
-  return $c.R -le 24 -and $c.G -le 24 -and $c.B -le 24
+function IsTransparent([System.Drawing.Color]$c) {
+  return $c.A -lt 128
 }
 
 function Resolve-SourcePath([string]$name) {
@@ -37,10 +37,10 @@ foreach ($name in $names) {
   for ($y = 0; $y -lt $h; $y++) {
     for ($x = 0; $x -lt $w; $x++) {
       $c = $srcBmp.GetPixel($x, $y)
-      if ($c.A -lt 128 -or (IsKeyColor $c)) {
+      if (IsTransparent $c) {
         $outBmp.SetPixel($x, $y, [System.Drawing.Color]::FromArgb(0, 0, 0, 0))
       } else {
-        $outBmp.SetPixel($x, $y, [System.Drawing.Color]::FromArgb($c.A, $c.R, $c.G, $c.B))
+        $outBmp.SetPixel($x, $y, [System.Drawing.Color]::FromArgb(255, $c.R, $c.G, $c.B))
       }
     }
   }
@@ -52,5 +52,5 @@ foreach ($name in $names) {
   $outBmp.Dispose()
   if (Test-Path $outPath) { Remove-Item $outPath -Force }
   Move-Item $tmpPath $outPath -Force
-  Write-Output "${name}.png ${w}x${h} RGBA (fonte: $(Split-Path $srcPath -Leaf))"
+  Write-Output "${name}.png ${w}x${h} RGBA (fonte: $(Split-Path $srcPath -Leaf), sem chroma key)"
 }

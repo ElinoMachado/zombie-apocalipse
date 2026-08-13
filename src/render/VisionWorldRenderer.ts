@@ -25,16 +25,42 @@ import {
   stableMalasRotation,
 } from '../assets/malas';
 import {
+  geradorDisplayScale,
+  GERADOR_POI_TYPE_ID,
+  pickGeradorFrame,
+  stableGeradorRotation,
+} from '../assets/geradores';
+import {
+  lixeiraDisplayScale,
+  LIXEIRA_POI_TYPE_ID,
+  pickLixeiraFrame,
+  stableLixeiraRotation,
+} from '../assets/lixeiras';
+import {
+  corpseDisplayScale,
+  CORPSE_POI_TYPE_ID,
+  pickCorpseFrame,
+  stableCorpseRotation,
+} from '../assets/pessoasMortas';
+import {
+  cofreDisplayScale,
+  COFRE_POI_TYPE_ID,
+  pickCofreFrame,
+  stableCofreRotation,
+} from '../assets/cofres';
+import {
+  machineDisplayScale,
+  MACHINE_POI_TYPE_ID,
+  pickMachineFrame,
+  stableMachineRotation,
+} from '../assets/maquinas';
+import { resolvePoiSpriteRotation } from '../assets/poiSpriteRotation';
+import {
   CAR_POI_TYPE_IDS,
   pickWreckedCarFrame,
   stableCarRotation,
   wreckedCarDisplayScale,
 } from '../assets/wreckedCars';
-import {
-  getPoiSpriteKey,
-  stablePropRotation,
-  worldPropDisplayScale,
-} from '../assets/worldProps';
 import { terrainTile } from '../assets/TilePalette';
 import {
   chooseRoadTile,
@@ -44,6 +70,7 @@ import {
 import { getStructureDef } from '../world/catalog/structures';
 import { ROAD_COLORS, ZONE_TINTS } from '../world/catalog/types';
 import type { AmbientProp, City, RoadType, StructureInstance } from '../world/model/types';
+import { trashBinInnerEdgeOffsetTiles } from '../world/pipeline/poiPlacementRules';
 import { NIGHT_VISION_TILES, visionOuterTiles } from '../game/DayNightCycle';
 import { FogOfWar } from '../game/FogOfWar';
 import {
@@ -569,7 +596,13 @@ export class VisionWorldRenderer {
         const frame = pickWreckedCarFrame(poi.id);
         const scale = wreckedCarDisplayScale(ts);
         const img = this.scene.add.image(px, py, AssetKeys.wreckedCars, frame);
-        img.setRotation(stableCarRotation(poi.id));
+        img.setRotation(
+          resolvePoiSpriteRotation(
+            poi.typeId,
+            frame,
+            stableCarRotation(poi.id),
+          ),
+        );
         img.setScale(scale);
         img.setOrigin(0.5, 0.5);
         this.propsContainer.add(img);
@@ -583,7 +616,13 @@ export class VisionWorldRenderer {
         const frame = pickCrateBoxFrame(poi.id);
         const scale = crateBoxDisplayScale(ts);
         const img = this.scene.add.image(px, py, AssetKeys.crateBoxes, frame);
-        img.setRotation(stableCrateRotation(poi.id));
+        img.setRotation(
+          resolvePoiSpriteRotation(
+            CRATE_POI_TYPE_ID,
+            frame,
+            stableCrateRotation(poi.id),
+          ),
+        );
         img.setScale(scale);
         img.setOrigin(0.5, 0.5);
         this.propsContainer.add(img);
@@ -597,7 +636,13 @@ export class VisionWorldRenderer {
         const frame = pickBackpackFrame(poi.id);
         const scale = backpackDisplayScale(ts);
         const img = this.scene.add.image(px, py, AssetKeys.backpacks, frame);
-        img.setRotation(stableBackpackRotation(poi.id));
+        img.setRotation(
+          resolvePoiSpriteRotation(
+            BACKPACK_POI_TYPE_ID,
+            frame,
+            stableBackpackRotation(poi.id),
+          ),
+        );
         img.setScale(scale);
         img.setOrigin(0.5, 0.5);
         this.propsContainer.add(img);
@@ -611,7 +656,13 @@ export class VisionWorldRenderer {
         const frame = pickContainerFrame(poi.id);
         const scale = containerDisplayScale(ts);
         const img = this.scene.add.image(px, py, AssetKeys.containers, frame);
-        img.setRotation(stableContainerRotation(poi.id));
+        img.setRotation(
+          resolvePoiSpriteRotation(
+            CONTAINER_POI_TYPE_ID,
+            frame,
+            stableContainerRotation(poi.id),
+          ),
+        );
         img.setScale(scale);
         img.setOrigin(0.5, 0.5);
         this.propsContainer.add(img);
@@ -625,18 +676,119 @@ export class VisionWorldRenderer {
         const frame = pickMalasFrame(poi.id);
         const scale = malasDisplayScale(ts);
         const img = this.scene.add.image(px, py, AssetKeys.malas, frame);
-        img.setRotation(stableMalasRotation(poi.id));
+        img.setRotation(
+          resolvePoiSpriteRotation(
+            MALAS_POI_TYPE_ID,
+            frame,
+            stableMalasRotation(poi.id),
+          ),
+        );
         img.setScale(scale);
         img.setOrigin(0.5, 0.5);
         this.propsContainer.add(img);
         continue;
       }
 
-      const propKey = getPoiSpriteKey(poi.typeId, poi.id);
-      if (propKey && this.scene.textures.exists(propKey)) {
-        const scale = worldPropDisplayScale(ts, propKey);
-        const img = this.scene.add.image(px, py, propKey);
-        img.setRotation(stablePropRotation(poi.id, poi.typeId));
+      if (
+        poi.typeId === LIXEIRA_POI_TYPE_ID &&
+        this.scene.textures.exists(AssetKeys.lixeiras)
+      ) {
+        const frame = pickLixeiraFrame(poi.id);
+        const scale = lixeiraDisplayScale(ts);
+        const edge = trashBinInnerEdgeOffsetTiles(this.city!, poi.x, poi.y);
+        const img = this.scene.add.image(
+          px + edge.ox * ts,
+          py + edge.oy * ts,
+          AssetKeys.lixeiras,
+          frame,
+        );
+        img.setRotation(
+          resolvePoiSpriteRotation(
+            LIXEIRA_POI_TYPE_ID,
+            frame,
+            stableLixeiraRotation(poi.id),
+          ),
+        );
+        img.setScale(scale);
+        img.setOrigin(0.5, 0.5);
+        this.propsContainer.add(img);
+        continue;
+      }
+
+      if (
+        poi.typeId === GERADOR_POI_TYPE_ID &&
+        this.scene.textures.exists(AssetKeys.geradores)
+      ) {
+        const frame = pickGeradorFrame(poi.id);
+        const scale = geradorDisplayScale(ts);
+        const img = this.scene.add.image(px, py, AssetKeys.geradores, frame);
+        img.setRotation(
+          resolvePoiSpriteRotation(
+            GERADOR_POI_TYPE_ID,
+            frame,
+            stableGeradorRotation(poi.id),
+          ),
+        );
+        img.setScale(scale);
+        img.setOrigin(0.5, 0.5);
+        this.propsContainer.add(img);
+        continue;
+      }
+
+      if (
+        poi.typeId === CORPSE_POI_TYPE_ID &&
+        this.scene.textures.exists(AssetKeys.pessoasMortas)
+      ) {
+        const frame = pickCorpseFrame(poi.id);
+        const scale = corpseDisplayScale(ts);
+        const img = this.scene.add.image(px, py, AssetKeys.pessoasMortas, frame);
+        img.setRotation(
+          resolvePoiSpriteRotation(
+            CORPSE_POI_TYPE_ID,
+            frame,
+            stableCorpseRotation(poi.id),
+          ),
+        );
+        img.setScale(scale);
+        img.setOrigin(0.5, 0.5);
+        this.propsContainer.add(img);
+        continue;
+      }
+
+      if (
+        poi.typeId === COFRE_POI_TYPE_ID &&
+        this.scene.textures.exists(AssetKeys.cofres)
+      ) {
+        const frame = pickCofreFrame(poi.id);
+        const scale = cofreDisplayScale(ts);
+        const img = this.scene.add.image(px, py, AssetKeys.cofres, frame);
+        img.setRotation(
+          resolvePoiSpriteRotation(
+            COFRE_POI_TYPE_ID,
+            frame,
+            stableCofreRotation(poi.id),
+          ),
+        );
+        img.setScale(scale);
+        img.setOrigin(0.5, 0.5);
+        this.propsContainer.add(img);
+        continue;
+      }
+
+      if (
+        poi.typeId === MACHINE_POI_TYPE_ID &&
+        this.scene.textures.exists(AssetKeys.maquinas)
+      ) {
+        const frame = pickMachineFrame(poi.id);
+        const scale = machineDisplayScale(ts);
+        const img = this.scene.add.image(px, py, AssetKeys.maquinas, frame);
+        img.setRotation(
+          resolvePoiSpriteRotation(
+            MACHINE_POI_TYPE_ID,
+            frame,
+            stableMachineRotation(poi.id),
+          ),
+        );
         img.setScale(scale);
         img.setOrigin(0.5, 0.5);
         this.propsContainer.add(img);

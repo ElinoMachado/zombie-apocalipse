@@ -43,4 +43,16 @@ describe('zombie vision cone', () => {
       true,
     );
   });
+
+  it('overlay cone hidden while hunting or alerted, half while eating', () => {
+    const show = (hunting: boolean, alerted: boolean) => !hunting && !alerted;
+    expect(show(false, false)).toBe(true);
+    expect(show(true, false)).toBe(false);
+    expect(show(false, true)).toBe(false);
+    expect(show(true, true)).toBe(false);
+
+    const innerOnly = (eating: boolean) => eating;
+    expect(innerOnly(true)).toBe(true);
+    expect(innerOnly(false)).toBe(false);
+  });
 });

@@ -1,8 +1,12 @@
 import { describe, expect, it } from 'vitest';
+import fs from 'node:fs';
+import path from 'node:path';
 import {
   pickWreckedCarFrame,
   WRECKED_CAR_COLS,
   WRECKED_CAR_FRAME_COUNT,
+  WRECKED_CAR_FRAME_H,
+  WRECKED_CAR_FRAME_W,
   WRECKED_CAR_ROW_END,
   WRECKED_CAR_ROW_START,
   wreckedCarCollisionObb,
@@ -10,8 +14,24 @@ import {
   wreckedCarFrameRow,
   circleHitsCarObb,
 } from '../../src/assets/wreckedCars';
+import { TILESHEETS } from '../../src/assets/manifest';
+import { AssetKeys } from '../../src/assets/manifest';
 
 describe('wreckedCars', () => {
+  it('manifest frame size matches sheet meta and constants', () => {
+    const meta = JSON.parse(
+      fs.readFileSync(
+        path.join(process.cwd(), 'public/assets/props/wrecked_cars_sheet.meta.json'),
+        'utf8',
+      ),
+    ) as { frameWidth: number; frameHeight: number };
+    const sheet = TILESHEETS.find((s) => s.key === AssetKeys.wreckedCars);
+    expect(sheet?.frameWidth).toBe(WRECKED_CAR_FRAME_W);
+    expect(sheet?.frameHeight).toBe(WRECKED_CAR_FRAME_H);
+    expect(meta.frameWidth).toBe(WRECKED_CAR_FRAME_W);
+    expect(meta.frameHeight).toBe(WRECKED_CAR_FRAME_H);
+  });
+
   it('picks frames from all sheet rows', () => {
     for (let i = 0; i < 40; i += 1) {
       const frame = pickWreckedCarFrame(`seed-${i}`);

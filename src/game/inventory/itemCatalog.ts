@@ -22,10 +22,11 @@ export const ITEM_CATALOG = {
     id: 'cloth',
     label: 'Pano',
     rarity: 'uncommon',
-    category: 'legacy',
+    category: 'consumable',
     weight: 1,
     maxStack: 6,
-    description: 'Tecido aproveitável para ligaduras e equipamento.',
+    description: 'Ligadura improvisada — para sangramento.',
+    consumable: { uses: 1, effect: 'Para sangramento' },
   }),
   supplies: I({
     id: 'supplies',

@@ -21,7 +21,7 @@ import {
   saveMergedAsRuntimeOverride,
 } from '../game/dev/wreckedCarProfileOverrides';
 
-const SHEET_URL = 'assets/props/wrecked_cars_sheet.png?v=3';
+const SHEET_URL = 'assets/props/wrecked_cars_sheet.png?v=7';
 const PREVIEW_SCALE = 2.4;
 
 export interface SpriteTuningHandlers {

@@ -4,6 +4,10 @@ import {
   findHighwaySpawnOutsideCity,
   type HighwaySpawnOptions,
 } from './findHighwaySpawn';
+import {
+  isPlayerSpawnClear,
+  reservePlayerSpawnFootprint,
+} from './playerSpawnFootprint';
 import { isUrbanCell } from '../world/pipeline/urbanFootprint';
 import { idx } from '../world/pipeline/util';
 
@@ -57,8 +61,30 @@ export function findSafePlayerSpawn(
       worldW,
       worldH,
     );
-    if (!collision.hits({ x: safe.x, y: safe.y, radius: playerRadius })) {
+    if (isPlayerSpawnClear(city, collision, safe.x, safe.y, playerRadius)) {
+      reservePlayerSpawnFootprint(city, safe.x, safe.y, playerRadius);
       return safe;
+    }
+  }
+
+  for (let ring = 1; ring <= 6; ring += 1) {
+    for (const c of candidates) {
+      const px = c.x * ts + ts / 2;
+      const py = c.y * ts + ts / 2;
+      const ang = (ring / 6) * Math.PI * 2;
+      const offset = ts * ring * 0.85;
+      const safe = collision.resolveSpawnPosition(
+        px + Math.cos(ang) * offset,
+        py + Math.sin(ang) * offset,
+        playerRadius,
+        worldW,
+        worldH,
+        192,
+      );
+      if (isPlayerSpawnClear(city, collision, safe.x, safe.y, playerRadius)) {
+        reservePlayerSpawnFootprint(city, safe.x, safe.y, playerRadius);
+        return safe;
+      }
     }
   }
 
@@ -72,5 +98,11 @@ export function findSafePlayerSpawn(
     worldH,
     256,
   );
+  if (isPlayerSpawnClear(city, collision, fallback.x, fallback.y, playerRadius)) {
+    reservePlayerSpawnFootprint(city, fallback.x, fallback.y, playerRadius);
+    return fallback;
+  }
+
+  reservePlayerSpawnFootprint(city, fallback.x, fallback.y, playerRadius);
   return fallback;
 }

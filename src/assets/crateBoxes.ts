@@ -1,11 +1,10 @@
 /** Spritesheet 4×2 de caixas de cartão (POI crate). */
-import { stableUprightOrFlatRotation } from './poiCardinalRotation';
 import { stableHash01 } from './wreckedCars';
 
 export const CRATE_BOX_COLS = 4;
 export const CRATE_BOX_ROWS = 2;
-export const CRATE_BOX_FRAME_W = 244;
-export const CRATE_BOX_FRAME_H = 247;
+export const CRATE_BOX_FRAME_W = 379;
+export const CRATE_BOX_FRAME_H = 382;
 export const CRATE_BOX_FRAME_COUNT = CRATE_BOX_COLS * CRATE_BOX_ROWS;
 
 export const CRATE_POI_TYPE_ID = 'crate';
@@ -24,6 +23,6 @@ export function crateBoxDisplayScale(tileSize: number): number {
   return (tileSize * 1.35) / CRATE_BOX_FRAME_W;
 }
 
-export function stableCrateRotation(seed: string): number {
-  return stableUprightOrFlatRotation(seed, 'crate-rot');
+export function stableCrateRotation(_seed: string): number {
+  return 0;
 }

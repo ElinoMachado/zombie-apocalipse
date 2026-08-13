@@ -4,6 +4,8 @@ import { GameAudio, preloadAudio } from '../audio/GameAudio';
 import { CombatSystem } from '../game/combat/CombatSystem';
 import { DamageNumbers } from '../game/combat/DamageNumbers';
 import { EnemyManager } from '../game/combat/EnemyManager';
+import { planEnemySpawns } from '../game/combat/planEnemySpawns';
+import type { PlannedEnemySpawn } from '../game/combat/planEnemySpawns';
 import { ZombieVisionOverlay } from '../game/combat/ZombieVisionOverlay';
 import { DayNightCycle, DAY_VISION_TILES, visionOuterTiles } from '../game/DayNightCycle';
 import {
@@ -18,6 +20,7 @@ import { VisionWorldRenderer } from '../render/VisionWorldRenderer';
 import { GenerateCityButton } from '../ui/GenerateCityButton';
 import { StructureLegend } from '../ui/StructureLegend';
 import { MainMenuHud } from '../ui/MainMenuHud';
+import { PoiRotationTuningHud } from '../ui/PoiRotationTuningHud';
 import { SpriteTuningHud } from '../ui/SpriteTuningHud';
 import { MapLegend } from '../ui/MapLegend';
 import { DayNightClockHud } from '../ui/DayNightClockHud';
@@ -27,6 +30,8 @@ import { CharacterSheetHud } from '../ui/CharacterSheetHud';
 import { LootResultPopup } from '../ui/LootResultPopup';
 import { LootSearchHud } from '../ui/LootSearchHud';
 import { SurvivalSenseHud } from '../ui/SurvivalSenseHud';
+import { LowHealthVignetteHud } from '../ui/LowHealthVignetteHud';
+import { PlayerStatusHud } from '../ui/PlayerStatusHud';
 import { LootSenseOverlay } from '../ui/LootSenseOverlay';
 import { WeaponHud } from '../ui/WeaponHud';
 import type { WeaponQuickSlotId } from '../ui/WeaponHud';
@@ -38,6 +43,7 @@ import {
 } from '../game/debug/chatCommands';
 import { CarHitboxOverlay } from '../render/CarHitboxOverlay';
 import { isDevMode } from '../game/dev/isDevMode';
+import { DEFAULT_PLAY_CITY_SIZE } from '../world/model/types';
 import { injectDevPoiShowcaseNearSpawn } from '../game/dev/injectDevPoiShowcase';
 import { getDefaultProfileId, listProfiles } from '../world/profiles';
 import {
@@ -45,6 +51,7 @@ import {
   generateWorld,
   getPrimaryCity,
 } from '../world';
+import { Rng } from '../world/rng/Rng';
 import type { City, CitySizeClass, World } from '../world/model/types';
 import type { ItemId } from '../game/inventory/inventory';
 import type { EquipSlotId } from '../game/inventory/equipmentLoadout';
@@ -108,6 +115,7 @@ export class MainScene extends Phaser.Scene {
   private mainMenu!: MainMenuHud;
   private ui!: GenerateCityButton;
   private spriteTuning: SpriteTuningHud | null = null;
+  private poiRotationTuning: PoiRotationTuningHud | null = null;
   private legend: MapLegend | null = null;
   private structureLegend: StructureLegend | null = null;
   private weaponHud!: WeaponHud;
@@ -117,6 +125,8 @@ export class MainScene extends Phaser.Scene {
   private lootSearchHud!: LootSearchHud;
   private lootPopup!: LootResultPopup;
   private survivalHud!: SurvivalSenseHud;
+  private lowHealthVignette!: LowHealthVignetteHud;
+  private playerStatusHud!: PlayerStatusHud;
   private dayNightHud!: DayNightClockHud;
   private diceHud!: DiceRollHud;
   private audio!: GameAudio;
@@ -165,6 +175,10 @@ export class MainScene extends Phaser.Scene {
   private chat: GameChatHud | null = null;
   private hitboxDebug!: HitboxDebugState;
   private carHitboxOverlay: CarHitboxOverlay | null = null;
+  private previewEnemyGfx: Phaser.GameObjects.Graphics | null = null;
+  private previewShowEnemySpawns = true;
+  private previewSpawnCacheKey = '';
+  private previewSpawnCache: PlannedEnemySpawn[] = [];
 
   constructor() {
     super({ key: 'MainScene' });
@@ -201,6 +215,10 @@ export class MainScene extends Phaser.Scene {
       onGenerate: (sizeClass, profileId) =>
         this.generateMapPreview(sizeClass, profileId),
       onBack: () => this.endPreview(),
+      onEnemySpawnToggle: (show) => {
+        this.previewShowEnemySpawns = show;
+        this.syncPreviewEnemySpawns();
+      },
     });
     this.ui.hide();
 
@@ -210,6 +228,7 @@ export class MainScene extends Phaser.Scene {
         onPlayDev: isDevMode() ? () => this.playDevFromMenu() : undefined,
         onWorldGenerator: isDevMode() ? () => this.showWorldGenerator() : undefined,
         onSprites: isDevMode() ? () => this.showSpriteTuning() : undefined,
+        onPoiRotation: isDevMode() ? () => this.showPoiRotationTuning() : undefined,
       },
       isDevMode(),
     );
@@ -228,6 +247,8 @@ export class MainScene extends Phaser.Scene {
     this.lootSearchHud = new LootSearchHud();
     this.lootPopup = new LootResultPopup();
     this.survivalHud = new SurvivalSenseHud();
+    this.lowHealthVignette = new LowHealthVignetteHud();
+    this.playerStatusHud = new PlayerStatusHud();
     this.dayNightHud = new DayNightClockHud();
     this.diceHud = new DiceRollHud();
     this.wireLootUi();
@@ -267,6 +288,8 @@ export class MainScene extends Phaser.Scene {
       this.lootSearchHud.destroy();
       this.lootPopup.destroy();
       this.survivalHud.destroy();
+      this.lowHealthVignette.destroy();
+      this.playerStatusHud.destroy();
       this.dayNightHud.destroy();
       this.diceHud.destroy();
       this.chat?.destroy();
@@ -379,7 +402,10 @@ export class MainScene extends Phaser.Scene {
         heal: (n) => p.heal(n),
         takeDamage: (n) => {
           const d = p.takeDamage(n);
-          if (d > 0) this.floaters?.showIncoming(p.x, p.y, d);
+          if (d > 0) {
+            this.floaters?.showIncoming(p.x, p.y, d);
+            this.notifyPlayerDamage();
+          }
           return d;
         },
         stamina: p.stamina,
@@ -400,9 +426,11 @@ export class MainScene extends Phaser.Scene {
     const burnDmg = this.player.updateBurn(delta);
     if (burnDmg > 0) {
       this.floaters.showIncoming(this.player.x, this.player.y, burnDmg);
+      this.notifyPlayerDamage();
     }
 
     this.player.faceAim(aimAngle);
+    this.enemies.prepareFrame();
     const allowCombat =
       this.player.alive &&
       !this.blockCombatInput &&
@@ -428,14 +456,32 @@ export class MainScene extends Phaser.Scene {
       this.worldPixel.width,
       this.worldPixel.height,
       this.collision,
-      (damage, atX, atY) => {
+      (damage, atX, atY, critical) => {
         if (!this.player?.alive) return;
         const applied = this.player.takeDamage(damage);
-        if (applied > 0) this.floaters?.showIncoming(atX, atY, applied);
+        if (applied > 0) {
+          if (critical) {
+            this.player.applyBleedingFromZombieCrit();
+            this.floaters?.showIncomingCritical(atX, atY, applied);
+          } else {
+            this.floaters?.showIncoming(atX, atY, applied);
+          }
+          this.notifyPlayerDamage();
+        }
       },
       this.player.isStealth,
       this.audio.zombieVocals,
+      this.audio.zombieEating,
+      this.cameras.main,
     );
+
+    for (const enemy of this.enemies.all) {
+      if (!enemy.alive) continue;
+      if (this.fires.touches(enemy.x, enemy.y, enemy.radius)) {
+        enemy.ignite(3);
+      }
+      enemy.updateBurn(delta);
+    }
 
     this.zombieVision?.sync(
       this.enemies.all,
@@ -449,6 +495,13 @@ export class MainScene extends Phaser.Scene {
     this.syncProgressionHud();
     this.inventoryHud.sync(this.resources.inventory);
     this.survivalHud.sync(this.resources.survivalSenseCooldown01);
+    this.lowHealthVignette.sync(this.player.hp, this.player.maxHp);
+    this.lowHealthVignette.update(delta);
+    this.playerStatusHud.sync(
+      this.resources.survival,
+      this.player.isBurning,
+    );
+    this.audio.updateHeartbeat(delta, this.player.hp, this.player.maxHp);
 
     this.dayNight.update(delta);
     this.dayNightHud.sync(this.dayNight.isDay, this.dayNight.halfPhase01);
@@ -564,6 +617,8 @@ export class MainScene extends Phaser.Scene {
     );
     const sx = safeSpawn.x;
     const sy = safeSpawn.y;
+    this.collision.rebuild(city);
+    this.worldRenderer.bind(city);
 
     if (options?.devPoiShowcase) {
       injectDevPoiShowcaseNearSpawn(city, sx, sy);
@@ -640,6 +695,10 @@ export class MainScene extends Phaser.Scene {
     this.inventoryHud.sync(this.resources.inventory);
     this.survivalHud.show();
     this.survivalHud.sync(0);
+    this.lowHealthVignette.show();
+    this.lowHealthVignette.sync(this.player.hp, this.player.maxHp);
+    this.playerStatusHud.show();
+    this.playerStatusHud.sync(this.resources.survival, this.player.isBurning);
     this.wireLootUi();
     this.wireCharacterSheet();
     this.dayNightHud.show();
@@ -687,6 +746,8 @@ export class MainScene extends Phaser.Scene {
     this.worldRenderer.syncPreviewFrame();
     this.legend?.show();
     this.structureLegend?.show();
+    this.previewShowEnemySpawns = this.ui.getShowEnemySpawns();
+    this.syncPreviewEnemySpawns();
 
     this.ui.show();
     this.ui.updateInfo({
@@ -700,8 +761,75 @@ export class MainScene extends Phaser.Scene {
       dump,
     });
     this.ui.setHint(
-      'WASD move · roda do rato ou [ ] zoom · legenda à direita · ESC volta',
+      'WASD move · roda/[ ] zoom · spawns: verde→vermelho (perif.→centro) · ESC volta',
     );
+  }
+
+  private syncPreviewEnemySpawns(): void {
+    this.previewEnemyGfx?.destroy();
+    this.previewEnemyGfx = null;
+    if (
+      !this.previewing ||
+      !this.previewShowEnemySpawns ||
+      !this.city ||
+      !this.world
+    ) {
+      return;
+    }
+
+    const ts = this.city.tileSize;
+    const worldW = this.city.grid.w * ts;
+    const worldH = this.city.grid.h * ts;
+    const playerSpawn = findSafePlayerSpawn(
+      this.city,
+      this.collision,
+      worldW,
+      worldH,
+      6,
+      { ruralEdgeBandFraction: 0.12 },
+    );
+    const spawns = this.getPreviewEnemySpawns(playerSpawn.x, playerSpawn.y);
+
+    const gfx = this.add.graphics().setDepth(72);
+    const bands = [
+      { min: 0.75, max: 1.01, color: 0xeb5050 },
+      { min: 0.5, max: 0.75, color: 0xd87858 },
+      { min: 0.25, max: 0.5, color: 0x9cb478 },
+      { min: 0, max: 0.25, color: 0x78d296 },
+    ];
+    for (const band of bands) {
+      gfx.fillStyle(band.color, 0.82);
+      for (const s of spawns) {
+        if (s.proximity >= band.min && s.proximity < band.max) {
+          gfx.fillCircle(s.x, s.y, 4);
+        }
+      }
+    }
+    gfx.lineStyle(2, 0x58a6ff, 0.95);
+    gfx.strokeCircle(playerSpawn.x, playerSpawn.y, 9);
+    gfx.fillStyle(0x58a6ff, 0.2);
+    gfx.fillCircle(playerSpawn.x, playerSpawn.y, 9);
+    this.previewEnemyGfx = gfx;
+  }
+
+  private getPreviewEnemySpawns(
+    playerSpawnX: number,
+    playerSpawnY: number,
+  ): PlannedEnemySpawn[] {
+    const cacheKey = `${this.world!.seed}:${this.city!.seed}:${Math.round(playerSpawnX)}:${Math.round(playerSpawnY)}`;
+    if (this.previewSpawnCacheKey === cacheKey) {
+      return this.previewSpawnCache;
+    }
+    const spawns = planEnemySpawns(
+      this.city!,
+      this.collision,
+      new Rng(this.world!.seed).fork('enemies'),
+      playerSpawnX,
+      playerSpawnY,
+    );
+    this.previewSpawnCacheKey = cacheKey;
+    this.previewSpawnCache = spawns;
+    return spawns;
   }
 
   private adjustPreviewZoom(
@@ -1249,12 +1377,23 @@ export class MainScene extends Phaser.Scene {
     }
   };
 
+  private notifyPlayerDamage(): void {
+    if (!this.player) return;
+    this.audio.onPlayerDamage(this.player.hp, this.player.maxHp);
+    this.lowHealthVignette.pulseOnDamage();
+  }
+
   private endSession(showUi: boolean): void {
     this.playing = false;
     this.previewing = false;
     this.chat?.hideLauncher();
     this.carHitboxOverlay?.setVisible(false);
+    this.previewEnemyGfx?.destroy();
+    this.previewEnemyGfx = null;
+    this.previewSpawnCacheKey = '';
+    this.previewSpawnCache = [];
     this.audio.stopMusic();
+    this.audio.heartbeat.reset();
     this.audio.clearWorldEmitters();
     this.collision.clear();
     this.combat?.destroy();
@@ -1265,6 +1404,7 @@ export class MainScene extends Phaser.Scene {
     this.zombieVision = null;
     this.enemies.clear();
     this.audio.zombieVocals.clear();
+    this.audio.zombieEating.clear();
     this.resources.clear();
     this.fires.clear();
     this.player?.destroy();
@@ -1283,6 +1423,8 @@ export class MainScene extends Phaser.Scene {
     this.lootSearchHud.setSearchHandler(null);
     this.lootPopup.hide();
     this.survivalHud.hide();
+    this.lowHealthVignette.hide();
+    this.playerStatusHud.hide();
     this.dayNightHud.hide();
     this.diceHud.hide();
     this.activeLootSiteId = null;
@@ -1316,17 +1458,19 @@ export class MainScene extends Phaser.Scene {
     this.ui.hide();
     this.spriteTuning?.destroy();
     this.spriteTuning = null;
+    this.poiRotationTuning?.destroy();
+    this.poiRotationTuning = null;
     this.mainMenu.show();
   }
 
   private playFromMenu(): void {
     this.mainMenu.hide();
-    this.startGame('medium', this.getDefaultPlayProfileId());
+    this.startGame(DEFAULT_PLAY_CITY_SIZE, this.getDefaultPlayProfileId());
   }
 
   private playDevFromMenu(): void {
     this.mainMenu.hide();
-    this.startGame('medium', this.getDefaultPlayProfileId(), {
+    this.startGame(DEFAULT_PLAY_CITY_SIZE, this.getDefaultPlayProfileId(), {
       devPoiShowcase: true,
     });
   }
@@ -1344,10 +1488,28 @@ export class MainScene extends Phaser.Scene {
   private showSpriteTuning(): void {
     this.mainMenu.hide();
     this.spriteTuning?.destroy();
+    this.spriteTuning = null;
+    this.poiRotationTuning?.destroy();
+    this.poiRotationTuning = null;
     this.spriteTuning = new SpriteTuningHud({
       onClose: () => {
         this.spriteTuning?.destroy();
         this.spriteTuning = null;
+        this.showMainMenu();
+      },
+    });
+  }
+
+  private showPoiRotationTuning(): void {
+    this.mainMenu.hide();
+    this.spriteTuning?.destroy();
+    this.spriteTuning = null;
+    this.poiRotationTuning?.destroy();
+    this.poiRotationTuning = null;
+    this.poiRotationTuning = new PoiRotationTuningHud({
+      onClose: () => {
+        this.poiRotationTuning?.destroy();
+        this.poiRotationTuning = null;
         this.showMainMenu();
       },
     });

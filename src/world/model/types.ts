@@ -27,6 +27,9 @@ export type Density = 'high' | 'medium' | 'low' | 'sparse';
 
 export type CitySizeClass = 'small' | 'medium' | 'large';
 
+/** Tamanho usado ao iniciar uma partida (Jogar) e quando o gerador não fixa tamanho. */
+export const DEFAULT_PLAY_CITY_SIZE: CitySizeClass = 'medium';
+
 export type StructureCategory = 'primary' | 'secondary' | 'exploration';
 
 export type BiomeType = 'forest' | 'field' | 'rural' | 'urban' | 'mixed';

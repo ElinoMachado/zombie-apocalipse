@@ -668,8 +668,8 @@ export const STRUCTURE_DEFINITIONS: StructureDefinition[] = [
     scoreWeights: W,
   }),
   def({
-    id: 'locker',
-    label: 'Armário',
+    id: 'cofre',
+    label: 'Cofre',
     category: 'exploration',
     footprint: { w: 1, h: 1 },
     color: 0x8d6e63,

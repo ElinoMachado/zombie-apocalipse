@@ -1,0 +1,10 @@
+{
+  "source": "cofre_source.png",
+  "cols": 4,
+  "rows": 2,
+  "frameWidth": 390,
+  "frameHeight": 370,
+  "sheetWidth": 1560,
+  "sheetHeight": 740,
+  "cells": 8
+}

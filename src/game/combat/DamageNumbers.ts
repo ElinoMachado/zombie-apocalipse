@@ -40,6 +40,11 @@ export class DamageNumbers {
     this.spawn(x, y - 10, `-${amount}`, '#ff6b6b', 16);
   }
 
+  /** Crítico recebido (zumbi natural 20). */
+  showIncomingCritical(x: number, y: number, amount: number): void {
+    this.spawn(x, y - 12, `CRIT -${amount}`, '#ff4444', 17);
+  }
+
   private spawn(
     x: number,
     y: number,

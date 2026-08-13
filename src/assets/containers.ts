@@ -1,11 +1,10 @@
 /** Spritesheet 2×4 de contentores (POI container). */
-import { stableFlatRotation } from './poiCardinalRotation';
 import { stableHash01 } from './wreckedCars';
 
 export const CONTAINER_COLS = 2;
 export const CONTAINER_ROWS = 4;
-export const CONTAINER_FRAME_W = 434;
-export const CONTAINER_FRAME_H = 256;
+export const CONTAINER_FRAME_W = 538;
+export const CONTAINER_FRAME_H = 313;
 export const CONTAINER_FRAME_COUNT = CONTAINER_COLS * CONTAINER_ROWS;
 
 export const CONTAINER_POI_TYPE_ID = 'container';
@@ -24,6 +23,6 @@ export function containerDisplayScale(tileSize: number): number {
   return (tileSize * 2.55 * 2) / CONTAINER_FRAME_W;
 }
 
-export function stableContainerRotation(seed: string): number {
-  return stableFlatRotation(seed, 'container-rot');
+export function stableContainerRotation(_seed: string): number {
+  return 0;
 }

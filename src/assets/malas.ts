@@ -1,11 +1,10 @@
 /** Spritesheet 4×2 de malas (POI malas, ex-caçamba). */
-import { stableUprightOrFlatRotation } from './poiCardinalRotation';
 import { stableHash01 } from './wreckedCars';
 
 export const MALAS_COLS = 4;
 export const MALAS_ROWS = 2;
-export const MALAS_FRAME_W = 256;
-export const MALAS_FRAME_H = 324;
+export const MALAS_FRAME_W = 384;
+export const MALAS_FRAME_H = 491;
 export const MALAS_FRAME_COUNT = MALAS_COLS * MALAS_ROWS;
 
 export const MALAS_POI_TYPE_ID = 'malas';
@@ -24,6 +23,6 @@ export function malasDisplayScale(tileSize: number): number {
   return (tileSize * 1.5) / MALAS_FRAME_W;
 }
 
-export function stableMalasRotation(seed: string): number {
-  return stableUprightOrFlatRotation(seed, 'malas-rot');
+export function stableMalasRotation(_seed: string): number {
+  return 0;
 }

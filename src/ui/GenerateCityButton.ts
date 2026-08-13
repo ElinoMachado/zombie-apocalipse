@@ -1,9 +1,11 @@
 import type { CitySizeClass } from '../world/model/types';
+import { DEFAULT_PLAY_CITY_SIZE } from '../world/model/types';
 import { getDefaultProfileId, listProfiles } from '../world/profiles';
 
 export interface GenerateCityButtonHandlers {
   onGenerate: (sizeClass: CitySizeClass, profileId: string) => void;
   onBack?: () => void;
+  onEnemySpawnToggle?: (show: boolean) => void;
 }
 
 const SIZE_OPTIONS: { value: CitySizeClass; label: string }[] = [
@@ -33,6 +35,7 @@ export class GenerateCityButton {
   private statsEl: HTMLSpanElement;
   private dumpEl: HTMLPreElement;
   private hintEl: HTMLDivElement;
+  private enemySpawnToggle: HTMLInputElement;
 
   constructor(handlers: GenerateCityButtonHandlers) {
     const host = document.getElementById('ui-root');
@@ -75,7 +78,7 @@ export class GenerateCityButton {
       const el = document.createElement('option');
       el.value = opt.value;
       el.textContent = opt.label;
-      if (opt.value === 'medium') el.selected = true;
+      if (opt.value === DEFAULT_PLAY_CITY_SIZE) el.selected = true;
       this.sizeSelect.append(el);
     }
     sizeRow.append(this.sizeSelect);
@@ -99,6 +102,21 @@ export class GenerateCityButton {
       this.profileSelect.append(el);
     }
     profileRow.append(this.profileSelect);
+
+    const enemyRow = document.createElement('label');
+    enemyRow.style.cssText =
+      'display:flex;align-items:center;gap:8px;margin-bottom:10px;font-size:12px;color:#c9d1d9;cursor:pointer;';
+    this.enemySpawnToggle = document.createElement('input');
+    this.enemySpawnToggle.type = 'checkbox';
+    this.enemySpawnToggle.checked = true;
+    this.enemySpawnToggle.style.cursor = 'pointer';
+    this.enemySpawnToggle.addEventListener('change', () => {
+      handlers.onEnemySpawnToggle?.(this.enemySpawnToggle.checked);
+    });
+    enemyRow.append(
+      this.enemySpawnToggle,
+      document.createTextNode('Mostrar spawns inimigos'),
+    );
 
     const btn = document.createElement('button');
     btn.type = 'button';
@@ -180,6 +198,7 @@ export class GenerateCityButton {
       title,
       sizeRow,
       profileRow,
+      enemyRow,
       btn,
       this.nameEl,
       this.seedEl,
@@ -194,11 +213,15 @@ export class GenerateCityButton {
   getSizeClass(): CitySizeClass {
     const v = this.sizeSelect.value;
     if (v === 'small' || v === 'medium' || v === 'large') return v;
-    return 'medium';
+    return DEFAULT_PLAY_CITY_SIZE;
   }
 
   getProfileId(): string {
     return this.profileSelect.value || getDefaultProfileId();
+  }
+
+  getShowEnemySpawns(): boolean {
+    return this.enemySpawnToggle.checked;
   }
 
   updateInfo(info: {

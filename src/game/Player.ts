@@ -217,13 +217,6 @@ export class Player {
       this.hp = 1;
     }
 
-    if (applied >= 2 && Math.random() < 0.2 && this.survival) {
-      this.survival.bleeding = true;
-      if (!this.survival.minorWounds && Math.random() < 0.35) {
-        this.survival.minorWounds = true;
-      }
-    }
-
     this.body.setFillStyle(0xff8a8a, 1);
     this.sprite.scene.time.delayedCall(80, () => {
       if (this.alive) this.applyStanceVisual();
@@ -235,6 +228,12 @@ export class Player {
       this.sprite.setAlpha(0.45);
     }
     return applied;
+  }
+
+  /** Sangramento só por ataque crítico de zumbi (natural 20). */
+  applyBleedingFromZombieCrit(): void {
+    if (!this.alive || !this.survival) return;
+    this.survival.bleeding = true;
   }
 
   /** Contacto com fogo: 1 de dano/s durante 3 s (renova). */

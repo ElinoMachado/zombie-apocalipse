@@ -31,6 +31,26 @@ describe('consumable mechanics', () => {
     expect(hp).toBe(13);
   });
 
+  it('cloth stops bleeding without healing', () => {
+    const survival = new SurvivalState();
+    survival.bleeding = true;
+    let hp = 10;
+    const target = {
+      heal() {
+        return 0;
+      },
+      maxHp: 16,
+      hp,
+      stamina: 50,
+      maxStamina: 100,
+      addStamina() {},
+    };
+    const result = applyConsumableEffects('cloth', survival, target);
+    expect(result.ok).toBe(true);
+    expect(survival.bleeding).toBe(false);
+    expect(hp).toBe(10);
+  });
+
   it('uses consumable from inventory slot', () => {
     const inv = new Inventory();
     inv.tryAdd('bottled_water', 2);

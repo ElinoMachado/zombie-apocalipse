@@ -5,6 +5,8 @@ import {
   type ProximityEmitterSpec,
 } from './ProximityAudio';
 import { preloadZombieVocals, ZombieVocalAudio } from './ZombieVocalAudio';
+import { preloadZombieEating, ZombieEatingAudio } from './ZombieEatingAudio';
+import { HeartbeatAudio, preloadHeartbeatAudio } from './HeartbeatAudio';
 
 export const AudioKeys = {
   musicSuspense: 'music-suspense',
@@ -67,6 +69,8 @@ export function preloadAudio(scene: Phaser.Scene): void {
     );
   }
   preloadZombieVocals(scene);
+  preloadZombieEating(scene);
+  preloadHeartbeatAudio(scene);
 }
 
 /**
@@ -76,6 +80,8 @@ export class GameAudio {
   private readonly scene: Phaser.Scene;
   private readonly proximity: ProximityAudio;
   readonly zombieVocals: ZombieVocalAudio;
+  readonly zombieEating: ZombieEatingAudio;
+  readonly heartbeat: HeartbeatAudio;
   private music: Phaser.Sound.BaseSound | null = null;
   private lootSearchSound: Phaser.Sound.BaseSound | null = null;
   private stepAcc = 0;
@@ -89,6 +95,18 @@ export class GameAudio {
     this.scene = scene;
     this.proximity = new ProximityAudio(scene);
     this.zombieVocals = new ZombieVocalAudio(scene);
+    this.zombieEating = new ZombieEatingAudio(scene);
+    this.heartbeat = new HeartbeatAudio(scene);
+  }
+
+  /** Heartbeat + efeitos de ferida — chamar após aplicar dano ao jogador. */
+  onPlayerDamage(hp: number, maxHp: number): void {
+    if (this.muted) return;
+    this.heartbeat.onDamage(hp, maxHp);
+  }
+
+  updateHeartbeat(deltaMs: number, hp: number, maxHp: number): void {
+    this.heartbeat.update(deltaMs, hp, maxHp);
   }
 
   private playSfx(
@@ -231,7 +249,10 @@ export class GameAudio {
   destroy(): void {
     this.stopLootSearch();
     this.stopMusic();
+    this.heartbeat.reset();
+    this.zombieEating.clear();
     this.zombieVocals.destroy();
+    this.zombieEating.destroy();
     this.proximity.destroy();
   }
 }

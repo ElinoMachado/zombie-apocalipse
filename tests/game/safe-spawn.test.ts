@@ -1,5 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { findSafePlayerSpawn } from '../../src/game/findSafeSpawn';
+import { FireHazards } from '../../src/game/FireHazards';
+import { isPlayerSpawnClear } from '../../src/game/playerSpawnFootprint';
 import { WorldCollision } from '../../src/game/WorldCollision';
 import { generateWorld, getPrimaryCity } from '../../src/world';
 
@@ -27,7 +29,12 @@ describe('safe player spawn', () => {
         radius,
         { ruralEdgeBandFraction: 0.12, marginTilesX: 8, marginTilesY: 8 },
       );
+      col.rebuild(city);
       expect(col.hits({ x: spawn.x, y: spawn.y, radius })).toBe(false);
+      expect(isPlayerSpawnClear(city, col, spawn.x, spawn.y, radius)).toBe(true);
+      const fires = new FireHazards();
+      fires.setFromCity(city.ambientProps, ts);
+      expect(fires.touches(spawn.x, spawn.y, radius)).toBe(false);
       expect(spawn.x).toBeGreaterThanOrEqual(radius);
       expect(spawn.y).toBeGreaterThanOrEqual(radius);
       expect(spawn.x).toBeLessThanOrEqual(worldW - radius);

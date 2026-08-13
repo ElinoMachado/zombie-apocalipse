@@ -128,8 +128,14 @@ export class ZombieVocalAudio {
     listenerY: number,
     dtSec: number,
   ): void {
+    const existing = this.slots.get(enemy.id);
+    if (enemy.isEating) {
+      if (existing) this.stopSlotSound(existing);
+      return;
+    }
+
     const mode = enemyVocalMode(enemy);
-    let slot = this.slots.get(enemy.id);
+    let slot = existing;
 
     if (!slot) {
       slot = this.createSlot(enemy.id, mode);

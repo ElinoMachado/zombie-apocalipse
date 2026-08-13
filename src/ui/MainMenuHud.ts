@@ -4,6 +4,7 @@ export interface MainMenuHandlers {
   onPlayDev?: () => void;
   onWorldGenerator?: () => void;
   onSprites?: () => void;
+  onPoiRotation?: () => void;
 }
 
 const btnCss = [
@@ -60,7 +61,8 @@ export class MainMenuHud {
       'margin:0 0 4px;font-size:22px;font-weight:700;line-height:1.2;color:#f0f6fc;';
 
     const subtitle = document.createElement('p');
-    subtitle.textContent = 'Sobrevive, explora e luta pelo que restou do mundo.';
+    subtitle.textContent =
+      'Sobrevive, explora e luta pelo que restou do mundo. Partida padrão: cidade média.';
     subtitle.style.cssText = 'margin:0 0 8px;font-size:13px;color:#8b949e;line-height:1.45;';
 
     const playBtn = this.makeButton('Jogar', 'primary');
@@ -83,10 +85,13 @@ export class MainMenuHud {
       const playDevBtn = this.makeButton('Jogar — dev', 'secondary');
       playDevBtn.addEventListener('click', () => handlers.onPlayDev?.());
 
-      const spritesBtn = this.makeButton('Sprites — ajustar hitboxes', 'secondary');
+      const spritesBtn = this.makeButton('Sprites — hitboxes carros', 'secondary');
       spritesBtn.addEventListener('click', () => handlers.onSprites?.());
 
-      this.devSection.append(devLabel, genBtn, playDevBtn, spritesBtn);
+      const poiRotBtn = this.makeButton('Sprites — rotação POIs', 'secondary');
+      poiRotBtn.addEventListener('click', () => handlers.onPoiRotation?.());
+
+      this.devSection.append(devLabel, genBtn, playDevBtn, spritesBtn, poiRotBtn);
       panel.append(this.devSection);
     }
 

@@ -196,7 +196,7 @@ export class ResourceManager {
     if (site.hasLoot !== null) {
       return { site, result: 'known' };
     }
-    site.hasLoot = rng() < lootPresenceChance(site.typeId);
+    site.hasLoot = rng() < lootPresenceChance(site.typeId, site.luck);
     return { site, result: site.hasLoot ? 'has' : 'empty' };
   }
 
@@ -272,7 +272,12 @@ export class ResourceManager {
     this.searchSiteId = null;
     this.searchElapsed = 0;
 
-    const rolls = rollLootWithIntellect(intellectScore, rng, lootTalents);
+    const rolls = rollLootWithIntellect(
+      intellectScore,
+      rng,
+      lootTalents,
+      Math.floor(site.luck * 3),
+    );
     const primary = rolls[0]!;
     const items: PendingLootItem[] = rolls.map((loot) => ({
       uid: `p${(this.uidSeq += 1)}`,
@@ -367,9 +372,12 @@ export class ResourceManager {
   }
 }
 
-function lootPresenceChance(typeId: string): number {
-  if (typeId === 'wrecked_car' || CAR_POI_TYPE_IDS.has(typeId)) {
-    return CAR_LOOT_PRESENCE_CHANCE;
-  }
-  return LOOT_PRESENCE_CHANCE;
+function lootPresenceChance(typeId: string, proximityLuck = 0): number {
+  const base =
+    typeId === 'wrecked_car' || CAR_POI_TYPE_IDS.has(typeId)
+      ? CAR_LOOT_PRESENCE_CHANCE
+      : LOOT_PRESENCE_CHANCE;
+  const scale = 0.1 + proximityLuck * 0.95;
+  const centerBoost = 1 + proximityLuck * 0.35;
+  return Math.min(0.88, base * scale * centerBoost);
 }

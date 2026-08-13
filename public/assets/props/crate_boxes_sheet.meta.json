@@ -1,10 +1,10 @@
-﻿{
-    "source":  "crate_boxes_source.png",
-    "cols":  4,
-    "rows":  2,
-    "frameWidth":  244,
-    "frameHeight":  247,
-    "sheetWidth":  976,
-    "sheetHeight":  494,
-    "cells":  8
+{
+  "source": "crate_boxes_source.png",
+  "cols": 4,
+  "rows": 2,
+  "frameWidth": 379,
+  "frameHeight": 382,
+  "sheetWidth": 1516,
+  "sheetHeight": 764,
+  "cells": 8
 }

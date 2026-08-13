@@ -5,9 +5,14 @@ import type { Enemy } from './Enemy';
 /** Passos angulares ao desenhar o cone ocluso (mais = mais suave). */
 const CONE_RAY_STEPS = 22;
 
+/** Distância máxima jogador→zumbi (px) para desenhar o cone (antes de +visionRadius). */
+export const ZOMBIE_VISION_OVERLAY_MAX_DRAW_DIST = 420;
+
 /**
  * Cones de visão 90° dos zumbis — cortados por paredes / bodyblock.
- * Em stealth a zona externa fica acinzentada (não detecta).
+ * Só visíveis enquanto o zumbi ainda não identificou o jogador; ao caçar, o cone
+ * some e volta quando o jogador despista (giveUpHunt). A comer, mantém metade
+ * (raio interno — como stealth). Em stealth a zona externa fica acinzentada.
  */
 export class ZombieVisionOverlay {
   private readonly gfx: Phaser.GameObjects.Graphics;
@@ -27,12 +32,12 @@ export class ZombieVisionOverlay {
     playerY: number,
     playerStealthed: boolean,
     collision: WorldCollision | null,
-    maxDrawDist = 420,
+    maxDrawDist = ZOMBIE_VISION_OVERLAY_MAX_DRAW_DIST,
   ): void {
     this.gfx.clear();
 
     for (const e of enemies) {
-      if (!e.alive) continue;
+      if (!e.alive || !e.showVisionCone) continue;
       const d = Math.hypot(e.x - playerX, e.y - playerY);
       if (d > maxDrawDist + e.visionRadius) continue;
 
@@ -42,16 +47,18 @@ export class ZombieVisionOverlay {
       const a0 = e.facing - half;
       const a1 = e.facing + half;
 
+      if (e.visionConeInnerOnly) {
+        // Comendo: só metade interna (como detecção em stealth).
+        this.gfx.fillStyle(0xff1744, 0.14);
+        this.gfx.lineStyle(1.5, 0xff5252, 0.6);
+        this.drawOccludedSector(e.x, e.y, rInner, a0, a1, collision);
+        continue;
+      }
+
       // Zona externa (anel do cone)
       if (playerStealthed) {
         this.gfx.fillStyle(0x6e7681, 0.14);
         this.gfx.lineStyle(1.25, 0x8b949e, 0.45);
-      } else if (e.inHorde) {
-        this.gfx.fillStyle(0xff6d00, 0.12);
-        this.gfx.lineStyle(1.5, 0xffab00, 0.55);
-      } else if (e.hunting) {
-        this.gfx.fillStyle(0xff1744, 0.1);
-        this.gfx.lineStyle(1.5, 0xff5252, 0.5);
       } else {
         this.gfx.fillStyle(0xff1744, 0.07);
         this.gfx.lineStyle(1.25, 0xff5252, 0.4);
@@ -59,16 +66,8 @@ export class ZombieVisionOverlay {
       this.drawOccludedSector(e.x, e.y, rOuter, a0, a1, collision);
 
       // Zona interna (sempre activa / mais intensa)
-      if (e.inHorde) {
-        this.gfx.fillStyle(0xff6d00, 0.2);
-        this.gfx.lineStyle(2, 0xffab00, 0.8);
-      } else if (e.hunting) {
-        this.gfx.fillStyle(0xff1744, 0.18);
-        this.gfx.lineStyle(2, 0xff5252, 0.75);
-      } else {
-        this.gfx.fillStyle(0xff1744, 0.14);
-        this.gfx.lineStyle(1.5, 0xff5252, 0.6);
-      }
+      this.gfx.fillStyle(0xff1744, 0.14);
+      this.gfx.lineStyle(1.5, 0xff5252, 0.6);
       this.drawOccludedSector(e.x, e.y, rInner, a0, a1, collision);
     }
   }

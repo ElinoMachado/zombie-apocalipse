@@ -15,8 +15,8 @@ if (-not (Test-Path $src)) {
 $cols = 4
 $rows = 2
 
-function IsKeyColor([System.Drawing.Color]$c) {
-  return $c.R -le 24 -and $c.G -le 24 -and $c.B -le 24
+function IsTransparent([System.Drawing.Color]$c) {
+  return $c.A -lt 128
 }
 
 function CellBounds($bmp, [int]$x0, [int]$y0, [int]$x1, [int]$y1) {
@@ -27,7 +27,7 @@ function CellBounds($bmp, [int]$x0, [int]$y0, [int]$x1, [int]$y1) {
   $found = $false
   for ($y = $y0; $y -le $y1; $y++) {
     for ($x = $x0; $x -le $x1; $x++) {
-      if (-not (IsKeyColor ($bmp.GetPixel($x, $y)))) {
+      if (-not (IsTransparent ($bmp.GetPixel($x, $y)))) {
         $found = $true
         if ($x -lt $minX) { $minX = $x }
         if ($y -lt $minY) { $minY = $y }
@@ -95,9 +95,8 @@ foreach ($cell in $cells) {
   for ($y = 0; $y -lt $ch; $y++) {
     for ($x = 0; $x -lt $cw; $x++) {
       $c = $srcBmp.GetPixel($x0 + $x, $y0 + $y)
-      if (-not (IsKeyColor $c)) {
-        $outBmp.SetPixel($dx0 + $x, $dy0 + $y, [System.Drawing.Color]::FromArgb(255, $c.R, $c.G, $c.B))
-      }
+      if (IsTransparent $c) { continue }
+      $outBmp.SetPixel($dx0 + $x, $dy0 + $y, [System.Drawing.Color]::FromArgb(255, $c.R, $c.G, $c.B))
     }
   }
 }

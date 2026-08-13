@@ -24,6 +24,7 @@ export type ConsumableEffect =
 export const CONSUMABLE_EFFECTS: Partial<Record<ItemId, ConsumableEffect[]>> = {
   bottled_water: [{ kind: 'hydration', amount: 15 }],
   canned_food: [{ kind: 'hunger', amount: 20 }],
+  cloth: [{ kind: 'clearBleeding' }],
   bandage: [{ kind: 'clearBleeding' }, { kind: 'heal', amount: 8 }],
   painkiller: [{ kind: 'woundPenalty', durationSec: 60 }],
   antiseptic: [{ kind: 'antiseptic', durationSec: 300 }],
@@ -105,7 +106,7 @@ export function applyConsumableEffects(
         break;
       case 'clearBleeding':
         if (survival.bleeding) {
-          survival.bleeding = false;
+          survival.stopBleeding();
           parts.push('Sangramento parado');
         }
         break;
