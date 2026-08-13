@@ -1,4 +1,11 @@
-import { ITEMS, itemTooltipText, type ItemId } from '../game/inventory/inventory';
+import {
+  ITEMS,
+  itemTooltipText,
+  RARITY_LABEL,
+  rarityColor,
+  normalizeRarity,
+  type ItemId,
+} from '../game/inventory/inventory';
 import type { PendingLootItem } from '../game/resources/ResourceManager';
 
 export type LootTakeHandler = (
@@ -158,10 +165,16 @@ export class LootResultPopup {
 
   private makeItemEl(it: PendingLootItem): HTMLDivElement {
     const def = ITEMS[it.itemId];
-    const hex = `#${def.color.toString(16).padStart(6, '0')}`;
+    const hex = `#${rarityColor(it.rarity).toString(16).padStart(6, '0')}`;
     const el = document.createElement('div');
     el.dataset.uid = it.uid;
-    el.title = `${itemTooltipText(def, it.qty)}\n(d20=${it.roll})\nBotão direito: guardar no inventário`;
+    el.title = [
+      def.label,
+      RARITY_LABEL[normalizeRarity(it.rarity)],
+      itemTooltipText(def, it.qty).split('\n').slice(1).join('\n'),
+      `(d20=${it.roll})`,
+      'Botão direito: guardar no inventário',
+    ].join('\n');
     el.style.cssText = [
       'width:52px',
       'height:52px',

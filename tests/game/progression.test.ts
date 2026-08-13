@@ -6,7 +6,8 @@ import {
 } from '../../src/game/progression/attributes';
 import { PlayerProgression, XP_REWARDS, MAX_LEVEL } from '../../src/game/progression/PlayerProgression';
 import {
-  bumpRarityUp,
+  lootItemCountFromTotal,
+  lootRarityTiersFromTotal,
   rarityFromLootTotal,
   rollLootWithIntellect,
 } from '../../src/game/resources/lootTable';
@@ -77,7 +78,7 @@ describe('loot intellect', () => {
     expect(rarityFromLootTotal(51)).toBe('top_secret');
   });
 
-  it('natural 20 bumps rarity one tier', () => {
+  it('natural 20 bumps each item rarity without extra quantity', () => {
     let n = 0;
     const rng = () => {
       n += 1;
@@ -86,10 +87,37 @@ describe('loot intellect', () => {
     const rolls = rollLootWithIntellect(10, rng);
     expect(rolls[0]!.naturalRoll).toBe(20);
     expect(rolls[0]!.total).toBe(20);
-    expect(rolls[0]!.rarity).toBe(bumpRarityUp('uncommon'));
+    expect(rolls).toHaveLength(2);
+    expect(rolls[0]!.rarity).toBe('uncommon');
+    expect(rolls[1]!.rarity).toBe('rare');
   });
 
-  it('adds extra items every 5 intellect mod', () => {
+  it('item count follows ceil(total / 10)', () => {
+    expect(lootItemCountFromTotal(6)).toBe(1);
+    expect(lootItemCountFromTotal(14)).toBe(2);
+    expect(lootItemCountFromTotal(23)).toBe(3);
+    expect(lootItemCountFromTotal(25)).toBe(3);
+  });
+
+  it('assigns rarities per decade step (6 → common; 23 → common/uncommon/rare)', () => {
+    expect(lootRarityTiersFromTotal(6, 6)).toEqual(['common']);
+    expect(lootRarityTiersFromTotal(14, 14)).toEqual(['common', 'rare']);
+    expect(lootRarityTiersFromTotal(23, 18)).toEqual([
+      'common',
+      'uncommon',
+      'rare',
+    ]);
+  });
+
+  it('natural 20 + mod 5 (total 25) yields uncommon, rare, super_rare', () => {
+    expect(lootRarityTiersFromTotal(25, 20)).toEqual([
+      'uncommon',
+      'rare',
+      'super_rare',
+    ]);
+  });
+
+  it('high intellect raises item count via total, not mod/5', () => {
     const rolls = rollLootWithIntellect(20, () => 0.5);
     expect(rolls.length).toBe(2);
   });

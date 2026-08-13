@@ -10,6 +10,15 @@ export const PESSOAS_MORTAS_FRAME_COUNT =
   PESSOAS_MORTAS_COLS * PESSOAS_MORTAS_ROWS;
 
 export const CORPSE_POI_TYPE_ID = 'corpse';
+/** Cadáver de zumbi derrotado — lootável, sem atrair outros zumbis. */
+export const ZOMBIE_CORPSE_POI_TYPE_ID = 'zombie_corpse';
+
+export function isZombieCorpseId(corpseId: string): boolean {
+  return corpseId.startsWith('zombie-corpse-');
+}
+
+/** Tint verde para distinguir cadáver infectado no mapa. */
+export const ZOMBIE_CORPSE_TINT = 0x6dff8a;
 
 export function pickCorpseFrame(seed: string): number {
   const idx = Math.floor(

@@ -21,12 +21,12 @@ export const ITEM_CATALOG = {
   cloth: I({
     id: 'cloth',
     label: 'Pano',
-    rarity: 'uncommon',
+    rarity: 'common',
     category: 'consumable',
     weight: 1,
     maxStack: 6,
-    description: 'Ligadura improvisada — para sangramento.',
-    consumable: { uses: 1, effect: 'Para sangramento' },
+    description: 'Ligadura improvisada — estanca sangramento.',
+    consumable: { uses: 1, effect: 'Estanca sangramento' },
   }),
   supplies: I({
     id: 'supplies',

@@ -2,6 +2,7 @@ import Phaser from 'phaser';
 import type { City } from '../../world/model/types';
 import {
   centerDistanceNorm,
+  lerp,
   proximityFromCenter,
 } from '../combat/cityThreat';
 import { Inventory, type ItemId } from '../inventory/inventory';
@@ -11,12 +12,17 @@ import { SurvivalState } from '../survival/SurvivalState';
 import type { WorldCollision } from '../WorldCollision';
 import type { LootTalentMods } from '../progression/talentEffects';
 import { CAR_POI_TYPE_IDS } from '../../assets/wreckedCars';
+import { ZOMBIE_CORPSE_POI_TYPE_ID } from '../../assets/pessoasMortas';
 import { rollLootWithIntellect, type LootRollResult } from './lootTable';
 
-/** Chance de o POI ter loot (resolvido ao aproximar pela 1ª vez). */
-export const LOOT_PRESENCE_CHANCE = 0.5;
-/** Carros (POI ou ambient) têm menor chance de loot. */
-export const CAR_LOOT_PRESENCE_CHANCE = 0.2;
+/** Chance de loot em POI na periferia/rural (proximity 0). */
+export const LOOT_PRESENCE_CHANCE = 0.7;
+/** Chance de loot em POI no centro da cidade (proximity 1). */
+export const LOOT_PRESENCE_CHANCE_CENTER = 0.95;
+/** Carros — periferia/rural. */
+export const CAR_LOOT_PRESENCE_CHANCE = 0.35;
+/** Carros — centro da cidade. */
+export const CAR_LOOT_PRESENCE_CHANCE_CENTER = 0.5;
 /** Multiplicador do raio do pulso Space (sentido de sobrevivência). */
 export const SURVIVAL_SENSE_RADIUS_MULT = 1.5;
 /** Tempo a vasculhar (ms). */
@@ -181,6 +187,29 @@ export class ResourceManager {
     this.gameTime += deltaMs;
   }
 
+  /** Cadáver de zumbi derrotado — lootável como POI comum (chance regional). */
+  registerZombieCorpseLootSite(
+    corpseId: string,
+    x: number,
+    y: number,
+    luck: number,
+  ): LootSite {
+    const site: LootSite = {
+      id: `loot-${corpseId}`,
+      poiId: corpseId,
+      typeId: ZOMBIE_CORPSE_POI_TYPE_ID,
+      x,
+      y,
+      luck,
+      hasLoot: null,
+      searchesDone: 0,
+      depleted: false,
+      pulseRevealUntil: 0,
+    };
+    this.sites.push(site);
+    return site;
+  }
+
   /**
    * Resolve 50% ao entrar no raio pela 1ª vez.
    * @returns 'has' | 'empty' | 'already' | null (fora de alcance / deplete)
@@ -277,6 +306,7 @@ export class ResourceManager {
       rng,
       lootTalents,
       Math.floor(site.luck * 3),
+      site.typeId,
     );
     const primary = rolls[0]!;
     const items: PendingLootItem[] = rolls.map((loot) => ({
@@ -326,7 +356,7 @@ export class ResourceManager {
       const d = Math.hypot(s.x - playerX, s.y - playerY);
       if (d > senseRadiusPx) continue;
       if (s.hasLoot === null) {
-        s.hasLoot = rng() < lootPresenceChance(s.typeId);
+        s.hasLoot = rng() < lootPresenceChance(s.typeId, s.luck);
       }
       if (s.hasLoot === true) {
         s.pulseRevealUntil = until;
@@ -372,12 +402,13 @@ export class ResourceManager {
   }
 }
 
-function lootPresenceChance(typeId: string, proximityLuck = 0): number {
-  const base =
-    typeId === 'wrecked_car' || CAR_POI_TYPE_IDS.has(typeId)
-      ? CAR_LOOT_PRESENCE_CHANCE
-      : LOOT_PRESENCE_CHANCE;
-  const scale = 0.1 + proximityLuck * 0.95;
-  const centerBoost = 1 + proximityLuck * 0.35;
-  return Math.min(0.88, base * scale * centerBoost);
+/** Chance 0–1 de o site ter loot, interpolada rural → centro. */
+export function lootPresenceChance(typeId: string, proximity = 0): number {
+  const t = Math.max(0, Math.min(1, proximity));
+  const isCar =
+    typeId === 'wrecked_car' || CAR_POI_TYPE_IDS.has(typeId);
+  if (isCar) {
+    return lerp(CAR_LOOT_PRESENCE_CHANCE, CAR_LOOT_PRESENCE_CHANCE_CENTER, t);
+  }
+  return lerp(LOOT_PRESENCE_CHANCE, LOOT_PRESENCE_CHANCE_CENTER, t);
 }

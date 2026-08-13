@@ -30,13 +30,12 @@ export function corpseEatDurationSec(enemyId: string, corpseId: string): number 
 export class CorpseIndex {
   private readonly cellSize: number;
   private readonly cells = new Map<number, CorpseSite[]>();
+  private corpses: CorpseSite[] = [];
 
-  private constructor(
-    private readonly corpses: readonly CorpseSite[],
-    cellSize: number,
-  ) {
+  private constructor(cellSize: number, initial: CorpseSite[] = []) {
     this.cellSize = cellSize;
-    for (const c of corpses) {
+    this.corpses = [...initial];
+    for (const c of this.corpses) {
       this.insert(c);
     }
   }
@@ -52,7 +51,14 @@ export class CorpseIndex {
         y: poi.y * ts + ts / 2,
       });
     }
-    return new CorpseIndex(corpses, Math.max(64, ts * 2));
+    return new CorpseIndex(Math.max(64, ts * 2), corpses);
+  }
+
+  /** Cadáver de zumbi derrotado — só humanos/POI entram no índice de alimentação. */
+  add(corpse: CorpseSite): void {
+    if (this.corpses.some((c) => c.id === corpse.id)) return;
+    this.corpses.push(corpse);
+    this.insert(corpse);
   }
 
   get count(): number {

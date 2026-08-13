@@ -4,7 +4,7 @@ import type { WorldCollision } from '../WorldCollision';
 export const ENEMY_NAV_CELL = 20;
 
 /** Raio usado ao marcar células bloqueadas e ao planear rotas. */
-export const ENEMY_NAV_RADIUS = 9;
+export const ENEMY_NAV_RADIUS = 12;
 
 const NEIGHBORS = [
   [1, 0, 1],
@@ -62,9 +62,25 @@ export class EnemyNavGrid {
 
     for (let cy = 0; cy < rows; cy += 1) {
       for (let cx = 0; cx < cols; cx += 1) {
-        const x = cx * cellSize + cellSize * 0.5;
-        const y = cy * cellSize + cellSize * 0.5;
-        if (collision.hits({ x, y, radius: agentRadius })) {
+        const baseX = cx * cellSize;
+        const baseY = cy * cellSize;
+        const samples = [
+          [0.5, 0.5],
+          [0.2, 0.5],
+          [0.8, 0.5],
+          [0.5, 0.2],
+          [0.5, 0.8],
+        ] as const;
+        let isBlocked = false;
+        for (const [fx, fy] of samples) {
+          const x = baseX + cellSize * fx;
+          const y = baseY + cellSize * fy;
+          if (collision.hits({ x, y, radius: agentRadius })) {
+            isBlocked = true;
+            break;
+          }
+        }
+        if (isBlocked) {
           blocked[cy * cols + cx] = 1;
         }
       }

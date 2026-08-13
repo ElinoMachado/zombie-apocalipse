@@ -1,4 +1,5 @@
 import Phaser from 'phaser';
+import { stableHash01 } from '../../assets/wreckedCars';
 import type { WorldCollision } from '../WorldCollision';
 import type { EnemyNavGrid, NavPoint } from './EnemyNavGrid';
 import {
@@ -428,7 +429,69 @@ export class Enemy {
   }
 
   private cellReachDist(): number {
-    return 14;
+    return Math.max(14, this.radius + 4);
+  }
+
+  /** Pathfind quando não há LOS ou quando encosta num obstáculo (ex.: quina de carro). */
+  private shouldPlanNavPath(hasLos: boolean): boolean {
+    return (
+      !hasLos ||
+      this.navStuckTime > 0.2 ||
+      (this.navWaypoints.length === 0 && this.navReplanLeft <= 0)
+    );
+  }
+
+  /** Segue waypoints se não há LOS directo ou se ficou preso com LOS. */
+  private shouldFollowNavWaypoint(hasLos: boolean): boolean {
+    return !hasLos || this.navStuckTime > 0.12;
+  }
+
+  private tryMoveWithSidestep(
+    collision: WorldCollision,
+    wantX: number,
+    wantY: number,
+    worldW: number,
+    worldH: number,
+  ): { x: number; y: number; moved: number; blocked: boolean } {
+    const planned = Math.hypot(wantX, wantY);
+    let result = collision.tryMove(
+      this.x,
+      this.y,
+      wantX,
+      wantY,
+      this.radius,
+      worldW,
+      worldH,
+    );
+    if (result.moved >= planned * 0.25) {
+      return { ...result, blocked: false };
+    }
+
+    const base = Math.atan2(wantY, wantX);
+    const preferLeft = stableHash01(`${this.id}:sidestep`) > 0.5;
+    const offsets = preferLeft
+      ? [Math.PI / 2, -Math.PI / 2, (3 * Math.PI) / 4, -(3 * Math.PI) / 4]
+      : [-Math.PI / 2, Math.PI / 2, -(3 * Math.PI) / 4, (3 * Math.PI) / 4];
+
+    for (const off of offsets) {
+      const a = base + off;
+      const sx = Math.cos(a) * planned * 0.85;
+      const sy = Math.sin(a) * planned * 0.85;
+      const alt = collision.tryMove(
+        this.x,
+        this.y,
+        sx,
+        sy,
+        this.radius,
+        worldW,
+        worldH,
+      );
+      if (alt.moved >= planned * 0.2) {
+        return { ...alt, blocked: false };
+      }
+    }
+
+    return { ...result, blocked: true };
   }
 
   private handleWanderBlocked(): void {
@@ -598,15 +661,11 @@ export class Enemy {
 
       this.navReplanLeft -= dt;
       const needPath =
-        nav &&
-        !hasLos &&
-        (this.navWaypoints.length === 0 ||
-          this.navReplanLeft <= 0 ||
-          this.navStuckTime > 0.35);
+        nav && this.shouldPlanNavPath(hasLos);
 
       if (needPath) {
         this.planNavPath(nav, playerX, playerY);
-      } else if (hasLos) {
+      } else if (hasLos && this.navStuckTime < 0.12) {
         this.clearNavPath();
         this.navFailStreak = 0;
       }
@@ -614,7 +673,7 @@ export class Enemy {
       let targetX = playerX;
       let targetY = playerY;
       const waypoint = this.currentNavTarget();
-      if (waypoint && !hasLos) {
+      if (waypoint && this.shouldFollowNavWaypoint(hasLos)) {
         targetX = waypoint.x;
         targetY = waypoint.y;
       }
@@ -631,10 +690,10 @@ export class Enemy {
       }
 
       if (
-        !hasLos &&
         !seesPlayer &&
         this.navFailStreak >= 3 &&
-        this.chaseNoProgressTime > 2.4
+        this.chaseNoProgressTime > 2.4 &&
+        (!hasLos || this.navStuckTime > 1.5)
       ) {
         this.giveUpHunt();
       }
@@ -693,20 +752,18 @@ export class Enemy {
 
             this.navReplanLeft -= dt;
             const needPath =
-              nav &&
-              !hasLos &&
-              (this.navWaypoints.length === 0 || this.navReplanLeft <= 0);
+              nav && this.shouldPlanNavPath(hasLos);
 
             if (needPath) {
               this.planNavPath(nav, this.corpseLureX, this.corpseLureY);
-            } else if (hasLos) {
+            } else if (hasLos && this.navStuckTime < 0.12) {
               this.clearNavPath();
             }
 
             let targetX = this.corpseLureX;
             let targetY = this.corpseLureY;
             const waypoint = this.currentNavTarget();
-            if (waypoint && !hasLos) {
+            if (waypoint && this.shouldFollowNavWaypoint(hasLos)) {
               targetX = waypoint.x;
               targetY = waypoint.y;
             }
@@ -740,40 +797,41 @@ export class Enemy {
 
     if (wantX !== 0 || wantY !== 0) {
       if (collision) {
-        const moved = collision.tryMove(
-          this.x,
-          this.y,
+        const moved = this.tryMoveWithSidestep(
+          collision,
           wantX,
           wantY,
-          this.radius,
           worldW,
           worldH,
         );
         const planned = Math.hypot(wantX, wantY);
-        const blocked = moved.moved < planned * 0.25;
+        const blocked = moved.blocked;
         if (blocked) {
           if (chasing) {
             this.navStuckTime += dt;
-            const los =
-              collision.hasLineOfSight(
-                this.x,
-                this.y,
-                playerX,
-                playerY,
-                playerRadius,
-              );
-            if (this.navStuckTime > 0.55) {
+            const los = collision.hasLineOfSight(
+              this.x,
+              this.y,
+              playerX,
+              playerY,
+              playerRadius,
+            );
+            if (this.navStuckTime > 0.35) {
               this.navReplanLeft = 0;
             }
+            if (los && this.navStuckTime > 0.5 && nav) {
+              this.planNavPath(nav, playerX, playerY);
+            }
             if (
-              !los &&
               this.navStuckTime > 2.2 &&
-              this.chaseNoProgressTime > 2.0
+              this.chaseNoProgressTime > 2.0 &&
+              (!los || this.navStuckTime > 3.5)
             ) {
               this.giveUpHunt();
             }
           } else if (this.corpseLureId) {
             this.navReplanLeft = 0;
+            this.navStuckTime += dt;
             this.handleWanderBlocked();
             moveFacing = this.wanderAngle;
           } else {

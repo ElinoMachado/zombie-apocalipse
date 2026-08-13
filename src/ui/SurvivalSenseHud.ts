@@ -1,6 +1,7 @@
 import {
   SURVIVAL_SENSE_COOLDOWN_MS,
 } from '../game/resources/ResourceManager';
+import { formatGamePercent } from '../game/formatNumbers';
 
 /** Indicador do sentido de sobrevivência (Space) — canto inferior direito da barra. */
 export class SurvivalSenseHud {
@@ -67,7 +68,7 @@ export class SurvivalSenseHud {
   sync(cooldown01: number): void {
     const ready = cooldown01 <= 0.001;
     const charged = 1 - Math.max(0, Math.min(1, cooldown01));
-    this.fill.style.width = `${(charged * 100).toFixed(1)}%`;
+    this.fill.style.width = formatGamePercent(charged);
     if (ready) {
       this.label.textContent = 'Espaço · Sentido pronto';
       this.label.style.color = '#58a6ff';

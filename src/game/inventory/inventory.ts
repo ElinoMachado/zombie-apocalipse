@@ -1,5 +1,6 @@
 /** Itens looteáveis + inventário com slots e peso. */
 
+import { formatGameNumber } from '../formatNumbers';
 import { ITEM_CATALOG, type ItemId } from './itemCatalog';
 import {
   CATEGORY_LABEL,
@@ -53,7 +54,7 @@ export function itemTooltipText(def: ItemDef, qty = 1): string {
   const lines = [
     RARITY_LABEL[normalizeRarity(def.rarity)],
     CATEGORY_LABEL[def.category],
-    `peso ${def.weight}${qty > 1 ? ` (total ${def.weight * qty})` : ''}`,
+    `peso ${formatGameNumber(def.weight)}${qty > 1 ? ` (total ${formatGameNumber(def.weight * qty)})` : ''}`,
   ];
   if (def.consumable) {
     lines.push(`Usos: ${def.consumable.uses} · ${def.consumable.effect}`);

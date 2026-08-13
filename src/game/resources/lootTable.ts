@@ -3,6 +3,15 @@ import { attributeModifier } from '../progression/attributes';
 import type { LootTalentMods } from '../progression/talentEffects';
 import { ITEMS, type ItemId, type ItemRarity } from '../inventory/inventory';
 import { normalizeRarity } from '../inventory/itemTypes';
+import { pickLootItemForRarity, pickLootItemForSite } from './lootPools';
+
+export {
+  LOOT_POOLS,
+  buildLootPools,
+  pickLootItemForRarity,
+  pickLootItemForSite,
+  isCorpseLootSite,
+} from './lootPools';
 
 /** Dado de busca: baixo = comum, alto = raro. */
 export const LOOT_DIE_SIDES = 20;
@@ -36,6 +45,47 @@ export function rarityFromLootTotal(total: number): ItemRarity {
   return 'common';
 }
 
+/** Quantidade de itens: total arredondado para cima em degraus de 10. */
+export function lootItemCountFromTotal(total: number): number {
+  return Math.max(1, Math.ceil(total / 10));
+}
+
+/**
+ * Total usado na faixa do i-ésimo item (1-based).
+ * Degraus 10, 20, …; no último slot usa o total (ou total+10 se só 2 itens abaixo de 20).
+ */
+export function lootTierTotalForItem(
+  total: number,
+  itemIndex1Based: number,
+  itemCount: number,
+): number {
+  if (itemIndex1Based >= itemCount) {
+    if (itemCount === 2 && total < 20) return total + 10;
+    return total;
+  }
+  return itemIndex1Based * 10;
+}
+
+/** Raridades por degrau de 10; natural 20 / talentos sobem cada item, não a quantidade. */
+export function lootRarityTiersFromTotal(
+  total: number,
+  naturalRoll: number,
+  lootTalents?: LootTalentMods,
+): ItemRarity[] {
+  const count = lootItemCountFromTotal(total);
+  const rarities: ItemRarity[] = [];
+  for (let i = 1; i <= count; i += 1) {
+    const tierTotal = lootTierTotalForItem(total, i, count);
+    let rarity = rarityFromLootTotal(tierTotal);
+    if (naturalRoll === LOOT_DIE_SIDES) rarity = bumpRarityUp(rarity);
+    if (lootTalents?.crit19 && naturalRoll >= 19) rarity = bumpRarityUp(rarity);
+    const bump = lootTalents?.rarityBump ?? 0;
+    for (let b = 0; b < bump; b += 1) rarity = bumpRarityUp(rarity);
+    rarities.push(rarity);
+  }
+  return rarities;
+}
+
 /** @deprecated Use {@link rarityFromLootTotal}. */
 export function rarityFromLootRoll(roll: number): ItemRarity {
   return rarityFromLootTotal(roll);
@@ -59,30 +109,29 @@ export function bumpRarityDown(rarity: ItemRarity): ItemRarity {
   return LOOT_RARITY_ORDER[Math.max(idx - 1, 0)]!;
 }
 
-/** Item representativo por faixa de raridade no loot procedural. */
-const BY_RARITY: Partial<Record<ItemRarity, ItemId>> = {
-  common: 'scrap',
-  uncommon: 'cloth',
-  rare: 'supplies',
-  super_rare: 'rare_parts',
-  legendary: 'rare_parts',
-  ultra_rare: 'regenerative_serum',
-  top_secret: 'experimental_nanomed',
-};
-
-export function itemForRarity(rarity: ItemRarity): ItemId {
-  return BY_RARITY[rarity] ?? BY_RARITY.common ?? 'scrap';
+/** Sorteia item do catálogo para a raridade (pool por faixa). */
+export function itemForRarity(
+  rarity: ItemRarity,
+  rng = Math.random,
+  lootSiteTypeId?: string,
+): ItemId {
+  if (lootSiteTypeId) {
+    return pickLootItemForSite(lootSiteTypeId, rarity, rng);
+  }
+  return pickLootItemForRarity(rarity, rng);
 }
 
 /**
- * Rola loot com Intelecto: d20 + mod → raridade.
- * Natural 20 sobe 1 categoria. A cada 5 de mod → +1 item (raridades altas primeiro).
+ * Rola loot com Intelecto: d20 + mod → faixas de 10.
+ * Quantidade = ceil(total / 10). Cada item num degrau (10, 20, …, total).
+ * Natural 20 sobe a raridade de cada item, sem acrescentar quantidade extra.
  */
 export function rollLootWithIntellect(
   intellectScore: number,
   rng = Math.random,
   lootTalents?: LootTalentMods,
   proximityLootBonus = 0,
+  lootSiteTypeId?: string,
 ): LootRollResult[] {
   const mod =
     attributeModifier(intellectScore) +
@@ -90,19 +139,12 @@ export function rollLootWithIntellect(
     Math.max(0, proximityLootBonus);
   const naturalRoll = rollDie(LOOT_DIE_SIDES, rng);
   const total = naturalRoll + mod;
-  let rarity = rarityFromLootTotal(total);
-  if (naturalRoll === LOOT_DIE_SIDES) rarity = bumpRarityUp(rarity);
-  if (lootTalents?.crit19 && naturalRoll >= 19) rarity = bumpRarityUp(rarity);
-
-  const bump = lootTalents?.rarityBump ?? 0;
-  for (let i = 0; i < bump; i += 1) rarity = bumpRarityUp(rarity);
-
-  const itemCount = 1 + Math.floor(mod / 5);
+  const rarityTiers = lootRarityTiersFromTotal(total, naturalRoll, lootTalents);
   const results: LootRollResult[] = [];
 
-  for (let i = 0; i < itemCount; i += 1) {
-    const tier = rarityStepsDown(rarity, i);
-    const itemId = itemForRarity(tier);
+  for (let i = 0; i < rarityTiers.length; i += 1) {
+    const tier = rarityTiers[i]!;
+    const itemId = itemForRarity(tier, rng, lootSiteTypeId);
     results.push({
       roll: naturalRoll,
       naturalRoll,
@@ -117,12 +159,6 @@ export function rollLootWithIntellect(
   return results;
 }
 
-function rarityStepsDown(base: ItemRarity, steps: number): ItemRarity {
-  let r = base;
-  for (let s = 0; s < steps; s += 1) r = bumpRarityDown(r);
-  return r;
-}
-
 /** Compat: rolagem simples sem atributos (testes legados). */
 export function rollLoot(
   rng = Math.random,
@@ -132,7 +168,7 @@ export function rollLoot(
   const naturalRoll = rollDie(LOOT_DIE_SIDES, rng);
   const total = Math.min(LOOT_DIE_SIDES + bonus, naturalRoll + bonus);
   const rarity = rarityFromLootTotal(total);
-  const itemId = itemForRarity(rarity);
+  const itemId = itemForRarity(rarity, rng);
   return {
     roll: total,
     naturalRoll,

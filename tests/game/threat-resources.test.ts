@@ -9,16 +9,20 @@ import {
 } from '../../src/game/combat/cityThreat';
 import { Inventory, ITEMS, MAX_CARRY_WEIGHT } from '../../src/game/inventory/inventory';
 import {
-  LOOT_PRESENCE_CHANCE,
   CAR_LOOT_PRESENCE_CHANCE,
+  CAR_LOOT_PRESENCE_CHANCE_CENTER,
+  LOOT_PRESENCE_CHANCE,
+  LOOT_PRESENCE_CHANCE_CENTER,
   LOOT_SEARCH_MS,
   SURVIVAL_SENSE_COOLDOWN_MS,
   SURVIVAL_SENSE_RADIUS_MULT,
+  lootPresenceChance,
 } from '../../src/game/resources/ResourceManager';
 import {
   rarityFromLootRoll,
   rollLoot,
 } from '../../src/game/resources/lootTable';
+import { LOOT_POOLS } from '../../src/game/resources/lootPools';
 import {
   pickResourceId,
   resourceAmountForProximity,
@@ -76,12 +80,21 @@ describe('resources / loot', () => {
     expect(rarityFromLootRoll(31)).toBe('super_rare');
     expect(rarityFromLootRoll(41)).toBe('ultra_rare');
     expect(rarityFromLootRoll(51)).toBe('top_secret');
-    expect(rollLoot(() => 0).itemId).toBe('scrap');
+    const loot = rollLoot(() => 0);
+    expect(loot.rarity).toBe('common');
+    expect(LOOT_POOLS.common).toContain(loot.itemId);
   });
 
-  it('exploration timings: 50% presence, 20% cars, 5s search, 2min sense CD', () => {
-    expect(LOOT_PRESENCE_CHANCE).toBe(0.5);
-    expect(CAR_LOOT_PRESENCE_CHANCE).toBe(0.2);
+  it('loot presence scales rural → center (POI 70–95%, carros 35–50%)', () => {
+    expect(LOOT_PRESENCE_CHANCE).toBe(0.7);
+    expect(LOOT_PRESENCE_CHANCE_CENTER).toBe(0.95);
+    expect(CAR_LOOT_PRESENCE_CHANCE).toBe(0.35);
+    expect(CAR_LOOT_PRESENCE_CHANCE_CENTER).toBe(0.5);
+    expect(lootPresenceChance('backpack', 0)).toBe(0.7);
+    expect(lootPresenceChance('backpack', 1)).toBe(0.95);
+    expect(lootPresenceChance('wrecked_car', 0)).toBe(0.35);
+    expect(lootPresenceChance('wrecked_car', 1)).toBe(0.5);
+    expect(lootPresenceChance('abandoned_car', 0.5)).toBeCloseTo(0.425);
     expect(SURVIVAL_SENSE_RADIUS_MULT).toBe(1.5);
     expect(LOOT_SEARCH_MS).toBe(5_000);
     expect(SURVIVAL_SENSE_COOLDOWN_MS).toBe(120_000);

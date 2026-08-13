@@ -13,7 +13,7 @@ import { EnemySpatialGrid } from './EnemySpatialGrid';
 import { planEnemySpawns } from './planEnemySpawns';
 import { Enemy } from './Enemy';
 import { ZOMBIE_VISION_OVERLAY_MAX_DRAW_DIST } from './ZombieVisionOverlay';
-import { CorpseIndex, MAX_CORPSE_EATERS } from './CorpseIndex';
+import { CorpseIndex, MAX_CORPSE_EATERS, type CorpseSite } from './CorpseIndex';
 import type { ZombieEatingAudio } from '../../audio/ZombieEatingAudio';
 
 /** Raio (px) para IA completa (movimento, pathfind, wander). */
@@ -201,6 +201,25 @@ export class EnemyManager {
       if (e.alive && e.isEating && e.targetCorpseId === corpseId) n += 1;
     }
     return n < MAX_CORPSE_EATERS;
+  }
+
+  /** Cadáver de zumbi derrotado — só loot; não entra no índice de alimentação. */
+  finalizeZombieCorpse(enemy: Enemy): CorpseSite | null {
+    if (enemy.alive) return null;
+    const corpse: CorpseSite = {
+      id: `zombie-corpse-${enemy.id}`,
+      x: enemy.x,
+      y: enemy.y,
+    };
+    const idx = this.enemies.indexOf(enemy);
+    if (idx >= 0) this.enemies.splice(idx, 1);
+    enemy.destroy();
+    return corpse;
+  }
+
+  /** @deprecated Use {@link finalizeZombieCorpse}. */
+  registerZombieCorpse(enemy: Enemy): CorpseSite | null {
+    return this.finalizeZombieCorpse(enemy);
   }
 
   updateAI(

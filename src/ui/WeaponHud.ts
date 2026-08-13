@@ -1,3 +1,4 @@
+import { formatGameNumber, formatGamePercent } from '../game/formatNumbers';
 import type { EquipmentLoadout } from '../game/inventory/equipmentLoadout';
 import { ITEMS } from '../game/inventory/inventory';
 import {
@@ -330,14 +331,14 @@ export class WeaponHud {
   ): void {
     this.syncQuickSlots(loadout);
 
-    this.hpLabel.textContent = `${Math.max(0, Math.ceil(hp))}/${maxHp}`;
+    this.hpLabel.textContent = `${formatGameNumber(Math.max(0, hp))}/${maxHp}`;
     const hpRatio = maxHp > 0 ? Math.max(0, Math.min(1, hp / maxHp)) : 0;
-    this.hpBar.style.width = `${(hpRatio * 100).toFixed(1)}%`;
+    this.hpBar.style.width = formatGamePercent(hpRatio);
 
-    this.staminaLabel.textContent = `${Math.max(0, Math.ceil(stamina))}/${maxStamina}`;
+    this.staminaLabel.textContent = `${formatGameNumber(Math.max(0, stamina))}/${maxStamina}`;
     const stamRatio =
       maxStamina > 0 ? Math.max(0, Math.min(1, stamina / maxStamina)) : 0;
-    this.staminaBar.style.width = `${(stamRatio * 100).toFixed(1)}%`;
+    this.staminaBar.style.width = formatGamePercent(stamRatio);
     this.staminaBar.style.opacity = stamRatio < 0.15 ? '0.45' : '1';
 
     if (xpNeed <= 0) {
@@ -345,7 +346,7 @@ export class WeaponHud {
       this.xpBar.style.width = '100%';
     } else {
       this.xpLabel.textContent = `${level} · ${xp}/${xpNeed} XP`;
-      this.xpBar.style.width = `${(xpProgress * 100).toFixed(1)}%`;
+      this.xpBar.style.width = formatGamePercent(xpProgress);
     }
 
     if (!primary || !loadout.equippedPrimary()) {
@@ -357,7 +358,7 @@ export class WeaponHud {
       this.primaryStat.textContent = 'Recarregando…';
       this.primaryStat.style.color = '#8b949e';
       this.reloadBarTrack.style.display = 'block';
-      this.reloadBar.style.width = `${(reloadProgress(reload) * 100).toFixed(1)}%`;
+      this.reloadBar.style.width = formatGamePercent(reloadProgress(reload));
     } else {
       this.primaryStat.textContent = rangedAmmoLabel(primary);
       this.primaryStat.style.color = '#ffe082';
@@ -372,9 +373,9 @@ export class WeaponHud {
       this.secondaryBar.style.opacity = '0.25';
     } else {
       const ratio = meleeDurabilityRatio(secondary);
-      this.secondaryStat.textContent = `${Math.round(ratio * 100)}%`;
+      this.secondaryStat.textContent = formatGamePercent(ratio);
       this.secondaryStat.style.color = ratio <= 0 ? '#484f58' : '#f0f6fc';
-      this.secondaryBar.style.width = `${(ratio * 100).toFixed(1)}%`;
+      this.secondaryBar.style.width = formatGamePercent(ratio);
       this.secondaryBar.style.opacity = ratio <= 0 ? '0.25' : '1';
     }
   }

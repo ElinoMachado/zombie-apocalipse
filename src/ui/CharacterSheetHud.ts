@@ -5,6 +5,7 @@ import {
   MAX_CARRY_WEIGHT,
   itemTooltipText,
 } from '../game/inventory/inventory';
+import { formatGameNumber } from '../game/formatNumbers';
 import type {
   EquipmentLoadout,
   EquipSlotId,
@@ -315,6 +316,7 @@ export class CharacterSheetHud {
       ['arms', 'Braços'],
       ['legs', 'Pernas'],
       ['feet', 'Pés'],
+      ['backpack', 'Mochila'],
       ['primary', 'Arma primária'],
       ['secondary', 'Arma secundária'],
     ];
@@ -354,6 +356,7 @@ export class CharacterSheetHud {
       arms: 'Braços',
       legs: 'Pernas',
       feet: 'Pés',
+      backpack: 'Mochila',
       primary: 'Arma primária',
       secondary: 'Arma secundária',
     };
@@ -381,9 +384,9 @@ export class CharacterSheetHud {
     if (s.hasAdrenaline()) flags.push('Adrenalina');
     if (s.speedMultiplier() > 1) flags.push('Buff velocidade');
     this.survivalRow.innerHTML = [
-      `<span>Fome <strong>${Math.round(s.hunger)}</strong></span>`,
-      `<span>Hidratação <strong>${Math.round(s.hydration)}</strong></span>`,
-      `<span>Fadiga <strong>${Math.round(s.fatigue)}</strong></span>`,
+      `<span>Fome <strong>${formatGameNumber(s.hunger)}</strong></span>`,
+      `<span>Hidratação <strong>${formatGameNumber(s.hydration)}</strong></span>`,
+      `<span>Fadiga <strong>${formatGameNumber(s.fatigue)}</strong></span>`,
       `<span>${flags.length ? flags.join(' · ') : 'Sem condições críticas'}</span>`,
     ].join('');
   }
@@ -497,7 +500,7 @@ export class CharacterSheetHud {
 
   private renderInventory(inv: Inventory): void {
     const w = inv.totalWeight;
-    this.weightLabel.textContent = `Peso ${w}/${inv.maxWeight}`;
+    this.weightLabel.textContent = `Peso ${formatGameNumber(w)}/${formatGameNumber(inv.maxWeight)}`;
     this.weightLabel.style.color =
       w >= inv.maxWeight ? '#ff8a80' : w >= inv.maxWeight * 0.75 ? '#ffe082' : '#8b949e';
 

@@ -4,6 +4,7 @@ import { GameAudio, preloadAudio } from '../audio/GameAudio';
 import { CombatSystem } from '../game/combat/CombatSystem';
 import { DamageNumbers } from '../game/combat/DamageNumbers';
 import { EnemyManager } from '../game/combat/EnemyManager';
+import type { Enemy } from '../game/combat/Enemy';
 import { planEnemySpawns } from '../game/combat/planEnemySpawns';
 import type { PlannedEnemySpawn } from '../game/combat/planEnemySpawns';
 import { ZombieVisionOverlay } from '../game/combat/ZombieVisionOverlay';
@@ -481,6 +482,11 @@ export class MainScene extends Phaser.Scene {
         enemy.ignite(3);
       }
       enemy.updateBurn(delta);
+      if (!enemy.alive) {
+        this.audio.zombieVocals.release(enemy.id);
+        this.handleXp('kill_zombie');
+        this.handleZombieKilled(enemy);
+      }
     }
 
     this.zombieVision?.sync(
@@ -666,6 +672,7 @@ export class MainScene extends Phaser.Scene {
     this.combat.setKillHandler((enemy) => {
       this.audio.zombieVocals.release(enemy.id);
       this.handleXp('kill_zombie');
+      this.handleZombieKilled(enemy);
     });
     this.enemies.spawnForCity(this, city, this.collision, sx, sy, this.audio.zombieVocals);
     this.resources.spawnForCity(this, city, this.collision);
@@ -1381,6 +1388,20 @@ export class MainScene extends Phaser.Scene {
     if (!this.player) return;
     this.audio.onPlayerDamage(this.player.hp, this.player.maxHp);
     this.lowHealthVignette.pulseOnDamage();
+  }
+
+  /** Zumbi morto → cadáver lootável (verde), sem alimentar outros zumbis. */
+  private handleZombieKilled(enemy: Enemy): void {
+    const luck = enemy.proximity;
+    const corpse = this.enemies.finalizeZombieCorpse(enemy);
+    if (!corpse) return;
+    this.resources.registerZombieCorpseLootSite(
+      corpse.id,
+      corpse.x,
+      corpse.y,
+      luck,
+    );
+    this.worldRenderer.spawnDynamicZombieCorpse(corpse.id, corpse.x, corpse.y);
   }
 
   private endSession(showUi: boolean): void {

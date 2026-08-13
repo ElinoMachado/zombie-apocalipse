@@ -41,6 +41,8 @@ import {
   CORPSE_POI_TYPE_ID,
   pickCorpseFrame,
   stableCorpseRotation,
+  ZOMBIE_CORPSE_POI_TYPE_ID,
+  ZOMBIE_CORPSE_TINT,
 } from '../assets/pessoasMortas';
 import {
   cofreDisplayScale,
@@ -132,6 +134,7 @@ export class VisionWorldRenderer {
   private paintedCells = new Set<number>();
   private drawnStructures = new Set<string>();
   private drawnAmbient = new Set<string>();
+  private drawnDynamicCorpses = new Set<string>();
   private structuresByChunk = new Map<number, StructureInstance[]>();
   private ambientByChunk = new Map<number, AmbientProp[]>();
   private pendingChunks: number[] = [];
@@ -189,6 +192,7 @@ export class VisionWorldRenderer {
     this.paintedCells.clear();
     this.drawnStructures.clear();
     this.drawnAmbient.clear();
+    this.drawnDynamicCorpses.clear();
     this.structuresByChunk.clear();
     this.ambientByChunk.clear();
     this.pendingChunks = [];
@@ -232,6 +236,59 @@ export class VisionWorldRenderer {
   /** Oculta overlay de névoa (modo inspecção). */
   setFogOverlayVisible(visible: boolean): void {
     this.fogRt?.setVisible(visible);
+  }
+
+  /** Cadáver de zumbi derrotado (tint verde; não atrai outros zumbis). */
+  spawnDynamicZombieCorpse(corpseId: string, worldX: number, worldY: number): void {
+    this.spawnDynamicCorpse(corpseId, worldX, worldY, true);
+  }
+
+  /** Sprite de cadáver no mundo (zumbi derrotado ou POI estático). */
+  spawnDynamicCorpse(
+    corpseId: string,
+    worldX: number,
+    worldY: number,
+    zombie = false,
+  ): void {
+    if (!this.propsContainer || !this.city) return;
+    if (this.drawnDynamicCorpses.has(corpseId)) return;
+    this.drawnDynamicCorpses.add(corpseId);
+    this.drawCorpseSprite(corpseId, worldX, worldY, zombie);
+  }
+
+  private drawCorpseSprite(
+    corpseId: string,
+    px: number,
+    py: number,
+    zombie = false,
+  ): void {
+    if (!this.propsContainer || !this.city) return;
+    if (!this.scene.textures.exists(AssetKeys.pessoasMortas)) {
+      const ts = this.city.tileSize;
+      const g = this.scene.add.graphics();
+      g.fillStyle(zombie ? 0x3d6b42 : 0x5a3030, 1);
+      g.fillCircle(px, py, Math.max(4, ts * 0.35));
+      this.propsContainer.add(g);
+      return;
+    }
+    const ts = this.city.tileSize;
+    const frame = pickCorpseFrame(corpseId);
+    const scale = corpseDisplayScale(ts);
+    const poiType = zombie ? ZOMBIE_CORPSE_POI_TYPE_ID : CORPSE_POI_TYPE_ID;
+    const img = this.scene.add.image(px, py, AssetKeys.pessoasMortas, frame);
+    img.setRotation(
+      resolvePoiSpriteRotation(
+        poiType,
+        frame,
+        stableCorpseRotation(corpseId),
+      ),
+    );
+    img.setScale(scale);
+    img.setOrigin(0.5, 0.5);
+    if (zombie) {
+      img.setTint(ZOMBIE_CORPSE_TINT);
+    }
+    this.propsContainer.add(img);
   }
 
   /**
@@ -739,19 +796,9 @@ export class VisionWorldRenderer {
         poi.typeId === CORPSE_POI_TYPE_ID &&
         this.scene.textures.exists(AssetKeys.pessoasMortas)
       ) {
-        const frame = pickCorpseFrame(poi.id);
-        const scale = corpseDisplayScale(ts);
-        const img = this.scene.add.image(px, py, AssetKeys.pessoasMortas, frame);
-        img.setRotation(
-          resolvePoiSpriteRotation(
-            CORPSE_POI_TYPE_ID,
-            frame,
-            stableCorpseRotation(poi.id),
-          ),
-        );
-        img.setScale(scale);
-        img.setOrigin(0.5, 0.5);
-        this.propsContainer.add(img);
+        if (this.drawnDynamicCorpses.has(poi.id)) continue;
+        this.drawnDynamicCorpses.add(poi.id);
+        this.drawCorpseSprite(poi.id, px, py);
         continue;
       }
 

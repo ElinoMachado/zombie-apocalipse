@@ -80,14 +80,15 @@ export const RARITY_LABEL: Record<ItemRarity, string> = {
   legendary: 'Lendário',
 };
 
+/** Cores por raridade (menor → maior): branco, verde, azul, roxo, laranja, vermelho. */
 export const RARITY_COLOR: Record<ItemRarity, number> = {
-  common: 0x9e9e9e,
-  uncommon: 0x7e57c2,
-  rare: 0x43a047,
-  super_rare: 0xffc107,
-  ultra_rare: 0xff7043,
-  top_secret: 0xe91e63,
-  legendary: 0xffc107,
+  common: 0xffffff,
+  uncommon: 0x4ade80,
+  rare: 0x3b82f6,
+  super_rare: 0xa855f7,
+  ultra_rare: 0xf97316,
+  top_secret: 0xef4444,
+  legendary: 0xa855f7,
 };
 
 export const CATEGORY_LABEL: Record<ItemCategory, string> = {

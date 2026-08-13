@@ -1,3 +1,4 @@
+import { formatGameNumber, formatGamePercent } from '../game/formatNumbers';
 import type { Inventory } from '../game/inventory/inventory';
 import {
   ITEMS,
@@ -182,7 +183,7 @@ export class InventoryHud {
   sync(inv: Inventory): void {
     const w = inv.totalWeight;
     const max = inv.maxWeight;
-    this.weightLabel.textContent = `Peso ${w}/${max}`;
+    this.weightLabel.textContent = `Peso ${formatGameNumber(w)}/${formatGameNumber(max)}`;
     this.weightLabel.style.color =
       w >= max ? '#ff8a80' : w >= max * 0.75 ? '#ffe082' : '#8b949e';
 

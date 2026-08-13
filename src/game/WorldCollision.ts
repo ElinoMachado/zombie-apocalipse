@@ -170,7 +170,7 @@ export class WorldCollision {
   }
 
   /**
-   * Tenta mover com slide nos eixos (X depois Y).
+   * Tenta mover com slide nos eixos; testa ordem X→Y e Y→X e fica com a melhor.
    * @returns nova posição e distância efectivamente andada.
    */
   tryMove(
@@ -182,17 +182,39 @@ export class WorldCollision {
     worldW: number,
     worldH: number,
   ): { x: number; y: number; moved: number } {
+    const xy = this.tryMoveAxisOrder(x, y, dx, dy, radius, worldW, worldH, 'xy');
+    const yx = this.tryMoveAxisOrder(x, y, dx, dy, radius, worldW, worldH, 'yx');
+    return xy.moved >= yx.moved ? xy : yx;
+  }
+
+  private tryMoveAxisOrder(
+    x: number,
+    y: number,
+    dx: number,
+    dy: number,
+    radius: number,
+    worldW: number,
+    worldH: number,
+    order: 'xy' | 'yx',
+  ): { x: number; y: number; moved: number } {
     const clamp = (v: number, max: number) =>
       Math.max(radius, Math.min(max - radius, v));
 
-    let nx = clamp(x + dx, worldW);
+    let nx = x;
     let ny = y;
-    if (this.hits({ x: nx, y: ny, radius })) nx = x;
 
-    ny = clamp(y + dy, worldH);
-    if (this.hits({ x: nx, y: ny, radius })) ny = y;
+    if (order === 'xy') {
+      nx = clamp(x + dx, worldW);
+      if (this.hits({ x: nx, y, radius })) nx = x;
+      ny = clamp(y + dy, worldH);
+      if (this.hits({ x: nx, y: ny, radius })) ny = y;
+    } else {
+      ny = clamp(y + dy, worldH);
+      if (this.hits({ x, y: ny, radius })) ny = y;
+      nx = clamp(x + dx, worldW);
+      if (this.hits({ x: nx, y: ny, radius })) nx = x;
+    }
 
-    // Se ainda colide (empurrado para dentro), não move
     if (this.hits({ x: nx, y: ny, radius })) {
       return { x, y, moved: 0 };
     }
