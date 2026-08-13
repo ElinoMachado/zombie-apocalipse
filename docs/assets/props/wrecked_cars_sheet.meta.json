@@ -1,10 +1,10 @@
-﻿{
-    "source":  "wrecked_cars_source.png",
-    "cols":  14,
-    "rows":  3,
-    "frameWidth":  73,
-    "frameHeight":  122,
-    "sheetWidth":  1022,
-    "sheetHeight":  366,
-    "cells":  42
+{
+  "source": "wrecked_cars_source.png",
+  "cols": 14,
+  "rows": 3,
+  "frameWidth": 110,
+  "frameHeight": 183,
+  "sheetWidth": 1540,
+  "sheetHeight": 549,
+  "cells": 42
 }

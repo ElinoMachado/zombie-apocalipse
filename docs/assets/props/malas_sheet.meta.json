@@ -1,0 +1,10 @@
+{
+  "source": "malas_source.png",
+  "cols": 4,
+  "rows": 2,
+  "frameWidth": 384,
+  "frameHeight": 491,
+  "sheetWidth": 1536,
+  "sheetHeight": 982,
+  "cells": 8
+}

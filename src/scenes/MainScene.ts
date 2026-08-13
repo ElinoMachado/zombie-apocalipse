@@ -547,13 +547,14 @@ export class MainScene extends Phaser.Scene {
     const itemHint =
       this.time.now < this.itemToastUntil ? ` · ${this.itemToastText}` : '';
     this.syncCarHitboxOverlay();
-    const devHud =
-      isDevMode() && chatOpen ? ' · CHAT ABERTO (Esc fecha) · Enter chat · ' : '';
-    this.hud.setText(
-      `${this.dayNight.label} · visão ${vision} (${mode})${stance}${
-        huntN > 0 ? ` · caça ${huntN}` : ''
-      }${horde}${emptyHint}${levelHint}${itemHint}${devHud}I ficha · ESC`,
-    );
+    if (isDevMode()) {
+      const devHud = chatOpen ? ' · CHAT ABERTO (Esc fecha) · Enter chat · ' : '';
+      this.hud.setText(
+        `${this.dayNight.label} · visão ${vision} (${mode})${stance}${
+          huntN > 0 ? ` · caça ${huntN}` : ''
+        }${horde}${emptyHint}${levelHint}${itemHint}${devHud}I ficha · ESC`,
+      );
+    }
   }
 
   private isChatOpen(): boolean {
@@ -711,7 +712,7 @@ export class MainScene extends Phaser.Scene {
     this.dayNightHud.show();
     this.dayNightHud.sync(this.dayNight.isDay, this.dayNight.halfPhase01);
     this.syncProgressionHud();
-    this.hud.setVisible(true);
+    this.hud.setVisible(isDevMode());
 
     this.ui.updateInfo({
       name: city.name,
